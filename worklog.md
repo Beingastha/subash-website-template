@@ -59,3 +59,139 @@ Built a stunning, fully responsive school website for Bharatiya Vidya Bhavan, Bh
 - Fixed Next.js image quality warning: changed `quality={90}` to `quality={75}` to match configured qualities
 - All sections are fully self-contained client components
 - No database or API dependencies — purely frontend
+
+---
+
+## Task ID: 2-5
+## Date: 2026-05-10
+
+### Summary
+Rebuilt the entire project as a multi-page school website for **Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal** — a Government School of Excellence under the Department of School Education, Madhya Pradesh. The website features 6 pages (Home, Teachers, Hostel, Activities, Principal, Contact) with shared navigation and footer components, consistent green (#006633) and gold (#D4AF37) color palette, scroll animations, animated counters, and a math captcha on the contact form.
+
+### Files Created/Modified
+
+1. **`/home/z/my-project/src/app/globals.css`**
+   - Replaced BVB color tokens with GSE school color tokens
+   - `--color-gse-green: #006633`, `--color-gse-gold: #D4AF37`, `--color-gse-cream: #F5F5DC`, `--color-gse-offwhite: #FAFAF5`, `--color-gse-charcoal: #1A1A2E`, etc.
+   - Retained all custom keyframe animations and scroll animation classes
+   - Updated scrollbar, pattern overlay, card hover, gold accent line, and nav transition styles to use new GSE colors
+
+2. **`/home/z/my-project/src/app/layout.tsx`**
+   - Updated metadata for Govt. HSS Excellence, Subhash Nagar, Bhopal
+   - Title: "Govt. HSS Excellence, Subhash Nagar, Bhopal — Nurturing Tomorrow's Leaders"
+   - Description and keywords updated for the new school
+   - Favicon: `/images/logo.png`
+
+3. **`/home/z/my-project/src/app/page.tsx`**
+   - Imports `HomePage` component from `@/components/home-page`
+
+4. **`/home/z/my-project/src/app/teachers/page.tsx`**
+   - Route page importing `TeachersPage` component
+
+5. **`/home/z/my-project/src/app/hostel/page.tsx`**
+   - Route page importing `HostelPage` component
+
+6. **`/home/z/my-project/src/app/activities/page.tsx`**
+   - Route page importing `ActivitiesPage` component
+
+7. **`/home/z/my-project/src/app/principal/page.tsx`**
+   - Route page importing `PrincipalPage` component
+
+8. **`/home/z/my-project/src/app/contact/page.tsx`**
+   - Route page importing `ContactPage` component
+
+9. **`/home/z/my-project/src/components/shared/navigation.tsx`**
+   - Reusable navigation component with `activePage` prop
+   - Sticky header with transparent→solid scroll transition
+   - Logo + "Govt. HSS Excellence" + "Subhash Nagar, Bhopal" subtitle
+   - 8 nav links: Home, About, Academics, Activities, Hostel, Teachers, Principal, Contact
+   - Gold "Apply Now" CTA button
+   - Mobile hamburger menu with full-height slide-down panel
+   - Active page highlighting (green on solid nav, gold on transparent)
+
+10. **`/home/z/my-project/src/components/shared/footer.tsx`**
+    - Reusable footer with gold accent line
+    - 4-column layout: School info + socials, Quick links (linking to all pages), Contact info (Subhash Shivaji Nagar, Bhopal, MP 462016), Map placeholder
+    - Copyright bar with UDISE Code: 23320301711
+
+11. **`/home/z/my-project/src/components/shared/scroll-reveal.tsx`**
+    - Intersection Observer-based scroll animation wrapper
+    - Supports directions: up, left, right, scale
+    - Configurable delay
+    - Adds `is-visible` class when element enters viewport
+
+12. **`/home/z/my-project/src/components/shared/animated-counter.tsx`**
+    - Animated number counter that triggers on scroll
+    - Eased cubic animation (ease-out cubic)
+    - Supports prefix and suffix text
+    - Used in the Statistics section
+
+13. **`/home/z/my-project/src/components/home-page.tsx`**
+    - **Hero Section**: Full viewport with /images/hero-campus.png background, green overlay, "School for Excellence, Bhopal" heading, CTAs, floating stats bar
+    - **About Section**: Split layout with image left, text right, Vision/Mission/Values cards
+    - **Academics Section**: 3 cards (Science, Computer Science, Library) on cream background with images
+    - **Activities Preview**: 3 cards (Badminton, Boxing, Cricket) with "View All Activities" link
+    - **Statistics Section**: Green background with 4 animated counters (50+ Years, 1200+ Students, 45+ Faculty, 92% Pass Rate)
+    - **Testimonials Section**: 3 cards from student, parent, alumni
+    - **Admissions CTA**: Green gradient with "Admissions Open" messaging
+    - **Footer**: Included via shared component
+
+14. **`/home/z/my-project/src/components/teachers-page.tsx`**
+    - Hero banner with /images/teachers-group.png
+    - Principal card: Special gradient card with large avatar and detailed info
+    - Vice Principal card: Similar gradient treatment
+    - 8 additional teacher cards in 4-column grid with initials avatar, designation, qualification, subject, experience
+    - Fictional but realistic Indian names for all faculty
+
+15. **`/home/z/my-project/src/components/hostel-page.tsx`**
+    - Hero banner with /images/hostel.png
+    - Overview section with text and image
+    - 6 feature cards: Rooms, Mess, Study Hall, Recreation, Security, Medical
+    - Gallery with 3 images
+    - Rules & Regulations section with 8 rules
+    - 2 Warden info cards
+    - CTA: "Contact for Hostel Admission"
+
+16. **`/home/z/my-project/src/components/activities-page.tsx`**
+    - Hero banner with /images/sports.png
+    - 3 featured activities with alternating layout: Badminton, Boxing, Cricket (each with detailed description and achievements)
+    - 6 additional activities: Kabaddi, Athletics, Volleyball, Yoga, NCC, NSS
+    - Achievements section on green background with 8 notable achievements
+    - CTA: "Interested in Sports?"
+
+17. **`/home/z/my-project/src/components/principal-page.tsx`**
+    - Green gradient hero banner
+    - Portrait left + message right layout (sticky portrait on desktop)
+    - Principal: Shri R.K. Sharma, M.Ed., M.Phil.
+    - 4+ paragraphs of inspiring message content
+    - Vision and Mission boxes with gold/green borders
+    - Quote highlight section on green background
+
+18. **`/home/z/my-project/src/components/contact-page.tsx`**
+    - Green gradient hero banner
+    - Contact form with: Name, Email, Phone, Subject, Message fields
+    - **Math Captcha**: Generates 2 random numbers (1-20), displays "num1 + num2 = ?", validates answer on submit, refresh button, NO external services
+    - Contact info sidebar: Address, Phone, Email, Office Hours
+    - Map placeholder
+    - Quick Info card (UDISE Code, Board, Type, Dept)
+    - Success state with animation on valid submission
+    - Form validation with error messages
+
+### Design Decisions
+- Used exact color palette from task: #006633 (green), #D4AF37 (gold), #F5F5DC (cream), #1A1A2E (charcoal)
+- No indigo/blue colors anywhere
+- Multi-page architecture with shared components for consistency
+- All pages share the same Navigation and Footer
+- Navigation highlights active page
+- Responsive mobile-first design throughout
+- Math captcha implementation (no external service needed)
+- Principal's message page with rich content and sticky portrait
+
+### Technical Notes
+- Fixed React lint error: Used `useState(generateCaptcha)` initializer function instead of `useEffect` + `setState` to avoid calling setState synchronously within an effect
+- All pages use 'use client' directive since they use hooks
+- Route pages are thin wrappers that import client components
+- `next/image` used throughout with `quality={75}` and proper alt text
+- Lucide React icons used exclusively
+- CSS-based animations via Intersection Observer pattern (no JS animation libraries)
+- Lint passes with zero errors

@@ -1,5 +1,5 @@
-import SchoolWebsite from '@/components/school-website';
+import HomePage from '@/components/home-page';
 
 export default function Home() {
-  return <SchoolWebsite />;
+  return <HomePage />;
 }

@@ -14,26 +14,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bharatiya Vidya Bhavan, Bhopal — Nurturing Minds, Shaping Futures",
+  title: "Govt. HSS Excellence, Subhash Nagar, Bhopal — Nurturing Tomorrow's Leaders",
   description:
-    "Bharatiya Vidya Bhavan, Bhopal is a premier CBSE affiliated senior secondary school established in 1985. Nurturing minds and shaping futures with excellence in academics, sports, and cultural activities.",
+    "Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal — A Government School of Distinction under the Department of School Education, Madhya Pradesh. MP Board affiliated with excellence in academics, sports, and holistic development.",
   keywords: [
-    "Bharatiya Vidya Bhavan",
+    "Govt HSS Excellence",
+    "Subhash Shivaji Nagar",
     "Bhopal",
-    "CBSE School",
-    "Senior Secondary School",
-    "Education",
+    "MP Board School",
+    "Government School of Excellence",
     "Madhya Pradesh",
-    "India",
-    "School Admission",
+    "School Education MP",
+    "Senior Secondary School",
+    "UDISE 23320301711",
+    "Bhopal School",
+    "Hostel School",
   ],
-  authors: [{ name: "Bharatiya Vidya Bhavan, Bhopal" }],
+  authors: [{ name: "Govt. HSS Excellence, Subhash Nagar, Bhopal" }],
   icons: {
     icon: "/images/logo.png",
   },
   openGraph: {
-    title: "Bharatiya Vidya Bhavan, Bhopal",
-    description: "Nurturing Minds, Shaping Futures — A Premier CBSE Institution in the Heart of Bhopal",
+    title: "Govt. HSS Excellence, Subhash Nagar, Bhopal",
+    description: "Nurturing Tomorrow's Leaders — A Government School of Distinction in Subhash Shivaji Nagar, Bhopal",
     type: "website",
   },
 };

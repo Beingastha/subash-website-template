@@ -42,18 +42,18 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* School color tokens */
-  --color-bvb-green: #0D5E3A;
-  --color-bvb-green-light: #14854D;
-  --color-bvb-green-dark: #094028;
-  --color-bvb-gold: #C8A951;
-  --color-bvb-gold-light: #D4BA6A;
-  --color-bvb-gold-dark: #A68B3C;
-  --color-bvb-cream: #FDF8EE;
-  --color-bvb-offwhite: #FAFAF5;
-  --color-bvb-charcoal: #1A1A2E;
-  --color-bvb-gray: #4A4A5A;
-  --color-bvb-border: #E8E8E8;
+  /* GSE School color tokens */
+  --color-gse-green: #006633;
+  --color-gse-green-light: #008844;
+  --color-gse-green-dark: #004D26;
+  --color-gse-gold: #D4AF37;
+  --color-gse-gold-light: #E5C754;
+  --color-gse-gold-dark: #B8962E;
+  --color-gse-cream: #F5F5DC;
+  --color-gse-offwhite: #FAFAF5;
+  --color-gse-charcoal: #1A1A2E;
+  --color-gse-gray: #4A4A5A;
+  --color-gse-border: #E0E0D0;
 
   /* Animation durations */
   --animate-fade-in-up: fade-in-up 0.7s ease-out forwards;
@@ -268,31 +268,31 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0D5E3A;
+  background: #006633;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #094028;
+  background: #004D26;
 }
 
 /* Pattern overlay for stats section */
 .pattern-overlay {
   background-image: 
-    radial-gradient(circle at 25% 25%, rgba(200, 169, 81, 0.1) 1px, transparent 1px),
-    radial-gradient(circle at 75% 75%, rgba(200, 169, 81, 0.08) 1px, transparent 1px);
+    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
 /* Geometric pattern for admissions section */
 .geometric-pattern {
   background-image: 
-    linear-gradient(30deg, rgba(200, 169, 81, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(200, 169, 81, 0.05) 87.5%, rgba(200, 169, 81, 0.05)),
-    linear-gradient(150deg, rgba(200, 169, 81, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(200, 169, 81, 0.05) 87.5%, rgba(200, 169, 81, 0.05)),
-    linear-gradient(30deg, rgba(200, 169, 81, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(200, 169, 81, 0.05) 87.5%, rgba(200, 169, 81, 0.05)),
-    linear-gradient(150deg, rgba(200, 169, 81, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(200, 169, 81, 0.05) 87.5%, rgba(200, 169, 81, 0.05)),
-    linear-gradient(60deg, rgba(200, 169, 81, 0.08) 25%, transparent 25.5%, transparent 75%, rgba(200, 169, 81, 0.08) 75%, rgba(200, 169, 81, 0.08)),
-    linear-gradient(60deg, rgba(200, 169, 81, 0.08) 25%, transparent 25.5%, transparent 75%, rgba(200, 169, 81, 0.08) 75%, rgba(200, 169, 81, 0.08));
+    linear-gradient(30deg, rgba(212, 175, 55, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(212, 175, 55, 0.05) 87.5%, rgba(212, 175, 55, 0.05)),
+    linear-gradient(150deg, rgba(212, 175, 55, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(212, 175, 55, 0.05) 87.5%, rgba(212, 175, 55, 0.05)),
+    linear-gradient(30deg, rgba(212, 175, 55, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(212, 175, 55, 0.05) 87.5%, rgba(212, 175, 55, 0.05)),
+    linear-gradient(150deg, rgba(212, 175, 55, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(212, 175, 55, 0.05) 87.5%, rgba(212, 175, 55, 0.05)),
+    linear-gradient(60deg, rgba(212, 175, 55, 0.08) 25%, transparent 25.5%, transparent 75%, rgba(212, 175, 55, 0.08) 75%, rgba(212, 175, 55, 0.08)),
+    linear-gradient(60deg, rgba(212, 175, 55, 0.08) 25%, transparent 25.5%, transparent 75%, rgba(212, 175, 55, 0.08) 75%, rgba(212, 175, 55, 0.08));
   background-size: 80px 140px;
   background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
 }
@@ -304,7 +304,7 @@
 
 .card-hover-lift:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(13, 94, 58, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 102, 51, 0.15);
 }
 
 /* Image hover zoom */
@@ -332,7 +332,7 @@
   left: 0;
   width: 60px;
   height: 3px;
-  background: #C8A951;
+  background: #D4AF37;
   border-radius: 2px;
 }
 
@@ -381,5 +381,5 @@
   font-family: Georgia, serif;
   font-size: 4rem;
   line-height: 1;
-  color: #C8A951;
+  color: #D4AF37;
 }
