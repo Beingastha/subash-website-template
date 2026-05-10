@@ -3,22 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { getSchoolData } from '@/lib/school-data';
 
 interface NavigationProps {
   activePage: string;
 }
 
-const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/#about' },
-  { name: 'Academics', href: '/#academics' },
-  { name: 'Activities', href: '/activities' },
-  { name: 'Hostel', href: '/hostel' },
-  { name: 'Teachers', href: '/teachers' },
-  { name: 'Principal', href: '/principal' },
-  { name: 'Contact', href: '/contact' },
-];
+const data = getSchoolData();
+const navLinks = data.navLinks;
 
 export default function Navigation({ activePage }: NavigationProps) {
   const [scrolled, setScrolled] = useState(false);
@@ -49,8 +42,8 @@ export default function Navigation({ activePage }: NavigationProps) {
           <Link href="/" className="flex items-center gap-3 shrink-0">
             <div className="relative w-10 h-10 md:w-12 md:h-12">
               <Image
-                src="/images/logo.png"
-                alt="Govt. HSS Excellence Logo"
+                src={data.images.logo}
+                alt={`${data.school.shortName} Logo`}
                 fill
                 className="object-contain"
               />
@@ -61,14 +54,14 @@ export default function Navigation({ activePage }: NavigationProps) {
                   scrolled ? 'text-gse-charcoal' : 'text-white'
                 }`}
               >
-                Govt. HSS Excellence
+                {data.school.shortName.split(',')[0]}
               </h1>
               <p
                 className={`text-xs transition-colors duration-300 ${
                   scrolled ? 'text-gse-gray' : 'text-gse-gold-light'
                 }`}
               >
-                Subhash Nagar, Bhopal
+                {data.school.address.area}, {data.school.address.city}
               </p>
             </div>
           </Link>

@@ -1,0 +1,21 @@
+{
+  "code": 200,
+  "data": {
+    "description": "",
+    "external": {},
+    "html": "<html><head>\n<title>Access Denied</title>\n</head><body>\n<h1>Access Denied</h1>\n \nYou don't have permission to access \"http://www.justdial.com/Bhopal/Subhash-Higher-Secondary-School-Shivaji-Nagar/0755P755STD59_BZDET\" on this server.<p>\nReference #18.6ed02e17.1778398517.f193278e\n</p><p>https://errors.edgesuite.net/18.6ed02e17.1778398517.f193278e</p>\n\n\n</body></html>",
+    "metadata": {},
+    "title": "Access Denied",
+    "url": "https://www.justdial.com/Bhopal/Subhash-Higher-Secondary-School-Shivaji-Nagar/0755P755STD59_BZDET",
+    "usage": {
+      "tokens": 130
+    },
+    "warning": "Target URL returned error 403: Forbidden"
+  },
+  "meta": {
+    "usage": {
+      "tokens": 130
+    }
+  },
+  "status": 20000
+}

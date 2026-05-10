@@ -7,12 +7,12 @@ import {
   Award,
   Users,
   Target,
-  Dumbbell,
-  Footprints,
-  Volleyball,
+  Swords,
+  Zap,
+  CircleDot,
+  Heart,
   Sparkles,
   Shield,
-  Heart,
   ArrowRight,
   Medal,
   Star,
@@ -20,59 +20,20 @@ import {
 import Navigation from '@/components/shared/navigation';
 import Footer from '@/components/shared/footer';
 import ScrollReveal from '@/components/shared/scroll-reveal';
+import { getSchoolData } from '@/lib/school-data';
 
-const featuredActivities = [
-  {
-    title: 'Badminton',
-    image: '/images/badminton.png',
-    desc: 'Our school boasts state-of-the-art indoor badminton courts that have produced numerous district and divisional level champions. Under the expert guidance of our dedicated badminton coach, students receive systematic training in footwork, strokes, game strategy, and physical conditioning.\n\nThe badminton program at Govt. HSS Excellence is one of the finest among government schools in Bhopal. Our students regularly participate in inter-school, district, and state-level tournaments organized by the School Education Department and MP Sports Authority.\n\nMany of our alumni have gone on to represent at state and national levels, a testament to the quality of coaching and the passion our students bring to the sport.',
-    achievements: [
-      'District Level Badminton Championship Winners 2024',
-      '5 students selected for State Level Tournament',
-      'Inter-School Bhopal Division Runners-Up',
-    ],
-  },
-  {
-    title: 'Boxing',
-    image: '/images/boxing.png',
-    desc: 'The boxing program at Govt. HSS Excellence is renowned across Madhya Pradesh for producing skilled and disciplined boxers. Our dedicated boxing ring and training facility provide students with a professional environment to learn and practice the sport.\n\nUnder the watchful eye of our experienced boxing coach, who is a former state-level boxer himself, students undergo rigorous training in technique, stamina, and mental toughness. The boxing program emphasizes not just competitive excellence but also discipline, respect, and self-confidence.\n\nOur boxers have consistently brought laurels to the school at district, state, and even national level competitions. The program has become a cornerstone of our school\'s identity as a center for sporting excellence.',
-    achievements: [
-      'State Level Boxing Championship Gold Medal 2024',
-      '3 students represented MP at National Level',
-      'Best Boxing School Award - Bhopal Division',
-    ],
-  },
-  {
-    title: 'Cricket',
-    image: '/images/cricket.png',
-    desc: 'Cricket is more than just a sport at Govt. HSS Excellence — it is a passion that unites the entire school community. Our cricket ground with practice nets provides the perfect setting for aspiring cricketers to hone their skills in batting, bowling, and fielding.\n\nOur cricket coaching program focuses on developing all-round skills with equal emphasis on technique, fitness, and game awareness. Regular inter-house and inter-school matches provide competitive exposure and help students develop teamwork and sportsmanship.\n\nThe school cricket team has been a consistent performer in inter-school tournaments across Bhopal and Madhya Pradesh. Several of our students have been selected for district and state age-group teams, and some have progressed to play at higher levels.',
-    achievements: [
-      'Inter-School Cricket Tournament Winners - Bhopal 2024',
-      '4 students in District Under-19 Team',
-      'Quarter-Finalists at State Level Tournament',
-    ],
-  },
-];
+const data = getSchoolData();
 
-const additionalActivities = [
-  { icon: Shield, name: 'Kabaddi', desc: 'Traditional sport with dedicated coaching and inter-school competitions' },
-  { icon: Footprints, name: 'Athletics', desc: 'Track and field events with professional training and regular meet participation' },
-  { icon: Volleyball, name: 'Volleyball', desc: 'Volleyball court with coaching and tournament opportunities' },
-  { icon: Heart, name: 'Yoga', desc: 'Daily yoga sessions for physical and mental well-being of students' },
-  { icon: Sparkles, name: 'NCC', desc: 'National Cadet Corps unit fostering discipline, leadership, and patriotism' },
-  { icon: Users, name: 'NSS', desc: 'National Service Scheme unit engaging students in community service' },
-];
-
-const achievements = [
-  'Overall Sports Champions - Bhopal Government Schools 2024',
-  '15+ students represented at State Level in various sports',
-  'State Gold Medal in Boxing (Youth Category)',
-  'District Badminton Champions for 3 consecutive years',
-  'Cricket Team reached State Quarter-Finals',
-  'Best NCC Unit Award - Bhopal Group',
-  'District Athletics Meet - 8 medals (3 Gold, 2 Silver, 3 Bronze)',
-  'Kabaddi Team - District Runners-Up',
-];
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  Swords,
+  Zap,
+  CircleDot,
+  Heart,
+  Sparkles,
+  Shield,
+  Users,
+  Target,
+};
 
 export default function ActivitiesPageComponent() {
   return (
@@ -83,8 +44,8 @@ export default function ActivitiesPageComponent() {
       <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/sports.png"
-            alt="Sports & Activities - Govt. HSS Excellence"
+            src={data.images.sports}
+            alt={`Sports & Activities - ${data.school.shortName}`}
             fill
             className="object-cover"
             priority
@@ -120,9 +81,9 @@ export default function ActivitiesPageComponent() {
             </ScrollReveal>
 
             <div className="space-y-16">
-              {featuredActivities.map((activity, i) => (
+              {data.activities.featured.map((activity, i) => (
                 <ScrollReveal
-                  key={activity.title}
+                  key={activity.id}
                   direction={i % 2 === 0 ? 'left' : 'right'}
                   delay={100}
                 >
@@ -135,7 +96,7 @@ export default function ActivitiesPageComponent() {
                       <div className="relative image-hover-zoom rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[400px]">
                         <Image
                           src={activity.image}
-                          alt={`${activity.title} at Govt. HSS Excellence`}
+                          alt={`${activity.title} at ${data.school.shortName}`}
                           fill
                           className="object-cover"
                           quality={75}
@@ -153,22 +114,37 @@ export default function ActivitiesPageComponent() {
                         <Medal size={28} className="text-gse-gold" />
                         {activity.title}
                       </h3>
-                      {activity.desc.split('\n\n').map((para, j) => (
+                      {activity.description.split('\n\n').map((para, j) => (
                         <p key={j} className="text-gse-gray leading-relaxed mb-4 text-sm md:text-base">
                           {para}
                         </p>
                       ))}
                       <div className="mt-4 space-y-2">
-                        <h4 className="text-gse-green font-semibold text-sm flex items-center gap-2">
+                        <h4 className="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2">
+                          <Star size={16} className="text-gse-gold" />
+                          Facilities
+                        </h4>
+                        <p className="text-gse-gray text-sm">{activity.facilities}</p>
+                        <h4 className="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
+                          <Star size={16} className="text-gse-gold" />
+                          Coaching
+                        </h4>
+                        <p className="text-gse-gray text-sm">{activity.coaching}</p>
+                        <h4 className="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
                           <Star size={16} className="text-gse-gold" />
                           Key Achievements
                         </h4>
-                        {activity.achievements.map((ach) => (
+                        {activity.achievements.split(', ').map((ach) => (
                           <div key={ach} className="flex items-start gap-2">
                             <Award size={14} className="text-gse-gold shrink-0 mt-1" />
                             <span className="text-gse-gray text-sm">{ach}</span>
                           </div>
                         ))}
+                        <h4 className="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
+                          <Star size={16} className="text-gse-gold" />
+                          Schedule
+                        </h4>
+                        <p className="text-gse-gray text-sm">{activity.schedule}</p>
                       </div>
                     </div>
                   </div>
@@ -195,19 +171,22 @@ export default function ActivitiesPageComponent() {
             </ScrollReveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {additionalActivities.map((act, i) => (
-                <ScrollReveal key={act.name} direction="up" delay={i * 100}>
-                  <div className="bg-white p-6 rounded-xl shadow-md card-hover-lift h-full flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gse-green/10 flex items-center justify-center shrink-0">
-                      <act.icon size={24} className="text-gse-green" />
+              {data.activities.other.map((act, i) => {
+                const IconComponent = iconMap[act.icon] || Users;
+                return (
+                  <ScrollReveal key={act.id} direction="up" delay={i * 100}>
+                    <div className="bg-white p-6 rounded-xl shadow-md card-hover-lift h-full flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gse-green/10 flex items-center justify-center shrink-0">
+                        <IconComponent size={24} className="text-gse-green" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gse-charcoal mb-1">{act.title}</h3>
+                        <p className="text-gse-gray text-sm leading-relaxed">{act.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gse-charcoal mb-1">{act.name}</h3>
-                      <p className="text-gse-gray text-sm leading-relaxed">{act.desc}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
+                  </ScrollReveal>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -228,7 +207,7 @@ export default function ActivitiesPageComponent() {
             </ScrollReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-              {achievements.map((ach, i) => (
+              {data.activities.achievements.map((ach, i) => (
                 <ScrollReveal key={ach} direction="up" delay={i * 80}>
                   <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 flex items-start gap-3">
                     <Trophy size={20} className="text-gse-gold shrink-0 mt-0.5" />
@@ -248,7 +227,7 @@ export default function ActivitiesPageComponent() {
                 Interested in Sports?
               </h2>
               <p className="text-gse-gray mb-8 max-w-2xl mx-auto">
-                Join Govt. HSS Excellence and get access to professional coaching,
+                Join {data.school.shortName} and get access to professional coaching,
                 modern facilities, and opportunities to compete at the highest level.
               </p>
               <Link

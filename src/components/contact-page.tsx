@@ -16,6 +16,9 @@ import {
 import Navigation from '@/components/shared/navigation';
 import Footer from '@/components/shared/footer';
 import ScrollReveal from '@/components/shared/scroll-reveal';
+import { getSchoolData } from '@/lib/school-data';
+
+const data = getSchoolData();
 
 function generateCaptcha() {
   const num1 = Math.floor(Math.random() * 20) + 1;
@@ -339,9 +342,9 @@ export default function ContactPageComponent() {
                         <div>
                           <p className="text-sm font-medium text-gse-charcoal">Address</p>
                           <p className="text-gse-gray text-sm">
-                            Govt. Higher Secondary School for Excellence,<br />
-                            Subhash Shivaji Nagar, Bhopal,<br />
-                            Madhya Pradesh - 462016
+                            {data.school.fullName},<br />
+                            {data.school.address.area}, {data.school.address.city},<br />
+                            {data.school.address.state} - {data.school.address.pincode}
                           </p>
                         </div>
                       </div>
@@ -349,22 +352,21 @@ export default function ContactPageComponent() {
                         <Phone size={18} className="text-gse-gold shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm font-medium text-gse-charcoal">Phone</p>
-                          <p className="text-gse-gray text-sm">+91 755-XXX-XXXX</p>
+                          <p className="text-gse-gray text-sm">{data.school.contact.phone}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <Mail size={18} className="text-gse-gold shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm font-medium text-gse-charcoal">Email</p>
-                          <p className="text-gse-gray text-sm">info@gsehssbpl.mp.gov.in</p>
+                          <p className="text-gse-gray text-sm">{data.school.contact.email}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <Clock size={18} className="text-gse-gold shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm font-medium text-gse-charcoal">Office Hours</p>
-                          <p className="text-gse-gray text-sm">Monday - Saturday</p>
-                          <p className="text-gse-gray text-sm">8:00 AM - 4:00 PM</p>
+                          <p className="text-gse-gray text-sm">{data.school.contact.officeHours}</p>
                         </div>
                       </div>
                     </div>
@@ -377,9 +379,9 @@ export default function ContactPageComponent() {
                       <div className="text-center">
                         <MapPin size={36} className="text-gse-green mx-auto mb-2" />
                         <p className="text-gse-charcoal text-sm font-medium">
-                          Subhash Shivaji Nagar
+                          {data.school.address.area}
                         </p>
-                        <p className="text-gse-gray text-xs">Bhopal, MP 462016</p>
+                        <p className="text-gse-gray text-xs">{data.school.address.city}, {data.school.address.state} {data.school.address.pincode}</p>
                       </div>
                     </div>
                   </div>
@@ -390,18 +392,16 @@ export default function ContactPageComponent() {
                     <div className="space-y-2 text-sm">
                       <p>
                         <span className="text-gse-gold font-medium">UDISE Code:</span>{' '}
-                        23320301711
+                        {data.school.udiseCode}
                       </p>
                       <p>
-                        <span className="text-gse-gold font-medium">Board:</span> MP Board
+                        <span className="text-gse-gold font-medium">Board:</span> {data.school.board}
                       </p>
                       <p>
-                        <span className="text-gse-gold font-medium">Type:</span> Government School
-                        of Excellence
+                        <span className="text-gse-gold font-medium">Type:</span> {data.school.type}
                       </p>
                       <p>
-                        <span className="text-gse-gold font-medium">Dept:</span> Department of
-                        School Education, M.P.
+                        <span className="text-gse-gold font-medium">Dept:</span> {data.school.department}
                       </p>
                     </div>
                   </div>

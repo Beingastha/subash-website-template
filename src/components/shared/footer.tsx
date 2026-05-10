@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, Phone, Mail, Clock, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { getSchoolData } from '@/lib/school-data';
+
+const data = getSchoolData();
 
 export default function Footer() {
   return (
@@ -17,33 +20,33 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-12 h-12">
                 <Image
-                  src="/images/logo.png"
-                  alt="Govt. HSS Excellence Logo"
+                  src={data.images.logo}
+                  alt={`${data.school.shortName} Logo`}
                   fill
                   className="object-contain"
                 />
               </div>
               <div>
                 <h3 className="text-gse-gold font-bold text-sm leading-tight">
-                  Govt. HSS Excellence
+                  {data.school.shortName.split(',')[0]}
                 </h3>
-                <p className="text-gray-400 text-xs">Subhash Nagar, Bhopal</p>
+                <p className="text-gray-400 text-xs">{data.school.address.area}, {data.school.address.city}</p>
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              A Government School of Excellence under the Department of School Education, Madhya Pradesh. Committed to nurturing tomorrow&apos;s leaders through quality education and holistic development.
+              A {data.school.type} under the {data.school.department}. Committed to nurturing tomorrow&apos;s leaders through quality education and holistic development.
             </p>
             <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="Facebook">
+              <a href={data.school.social.facebook} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="Facebook">
                 <Facebook size={16} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="Twitter">
-                <Twitter size={16} />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="Instagram">
+              <a href={data.school.social.instagram} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="Instagram">
                 <Instagram size={16} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="YouTube">
+              <a href={data.school.social.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="LinkedIn">
+                <Linkedin size={16} />
+              </a>
+              <a href={data.school.social.youtube} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gse-green flex items-center justify-center hover:bg-gse-green-light transition-colors" aria-label="YouTube">
                 <Youtube size={16} />
               </a>
             </div>
@@ -53,23 +56,14 @@ export default function Footer() {
           <div>
             <h3 className="text-gse-gold font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              {[
-                { name: 'Home', href: '/' },
-                { name: 'About Us', href: '/#about' },
-                { name: 'Academics', href: '/#academics' },
-                { name: 'Activities', href: '/activities' },
-                { name: 'Hostel', href: '/hostel' },
-                { name: 'Faculty', href: '/teachers' },
-                { name: "Principal's Message", href: '/principal' },
-                { name: 'Contact Us', href: '/contact' },
-              ].map((link) => (
-                <li key={link.name}>
+              {data.quickLinks.map((link) => (
+                <li key={link.label}>
                   <Link
                     href={link.href}
                     className="text-gray-400 text-sm hover:text-gse-gold transition-colors flex items-center gap-2"
                   >
                     <span className="w-1.5 h-1.5 bg-gse-gold rounded-full shrink-0" />
-                    {link.name}
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -83,21 +77,21 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-gse-gold shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  Subhash Shivaji Nagar, Bhopal,<br />
-                  Madhya Pradesh - 462016
+                  {data.school.address.area}, {data.school.address.city},<br />
+                  {data.school.address.state} - {data.school.address.pincode}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-gse-gold shrink-0" />
-                <span className="text-gray-400 text-sm">+91 755-XXX-XXXX</span>
+                <span className="text-gray-400 text-sm">{data.school.contact.phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-gse-gold shrink-0" />
-                <span className="text-gray-400 text-sm">info@gsehssbpl.mp.gov.in</span>
+                <span className="text-gray-400 text-sm">{data.school.contact.email}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock size={18} className="text-gse-gold shrink-0" />
-                <span className="text-gray-400 text-sm">Mon-Sat: 8:00 AM - 4:00 PM</span>
+                <span className="text-gray-400 text-sm">{data.school.contact.officeHours}</span>
               </li>
             </ul>
           </div>
@@ -108,8 +102,8 @@ export default function Footer() {
             <div className="w-full h-40 bg-gse-green/20 rounded-lg border border-gse-green/30 flex items-center justify-center">
               <div className="text-center">
                 <MapPin size={32} className="text-gse-gold mx-auto mb-2" />
-                <p className="text-gray-400 text-xs">Subhash Shivaji Nagar</p>
-                <p className="text-gray-500 text-xs">Bhopal, MP 462016</p>
+                <p className="text-gray-400 text-xs">{data.school.address.area}</p>
+                <p className="text-gray-500 text-xs">{data.school.address.city}, {data.school.address.state} {data.school.address.pincode}</p>
               </div>
             </div>
           </div>
@@ -120,10 +114,10 @@ export default function Footer() {
       <div className="border-t border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-gray-500 text-xs text-center sm:text-left">
-            &copy; {new Date().getFullYear()} Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal. All Rights Reserved.
+            &copy; {new Date().getFullYear()} {data.school.fullName}. All Rights Reserved.
           </p>
           <p className="text-gray-500 text-xs">
-            UDISE Code: <span className="text-gse-gold">23320301711</span>
+            UDISE Code: <span className="text-gse-gold">{data.school.udiseCode}</span>
           </p>
         </div>
       </div>

@@ -5,81 +5,10 @@ import { User, Award, BookOpen, Clock, Star, Crown } from 'lucide-react';
 import Navigation from '@/components/shared/navigation';
 import Footer from '@/components/shared/footer';
 import ScrollReveal from '@/components/shared/scroll-reveal';
+import { getSchoolData } from '@/lib/school-data';
 
-const teachers = [
-  {
-    name: 'Shri R.K. Sharma',
-    designation: 'Principal',
-    qualification: 'M.Ed., M.Phil.',
-    subject: 'Administration',
-    experience: 28,
-    isPrincipal: true,
-  },
-  {
-    name: 'Smt. Savita Joshi',
-    designation: 'Vice Principal',
-    qualification: 'M.A., B.Ed.',
-    subject: 'Hindi',
-    experience: 24,
-    isVicePrincipal: true,
-  },
-  {
-    name: 'Shri Anil Kumar Tiwari',
-    designation: 'Head of Science Dept',
-    qualification: 'M.Sc., B.Ed.',
-    subject: 'Physics',
-    experience: 20,
-  },
-  {
-    name: 'Shri Manoj Kumar Dubey',
-    designation: 'Head of Math Dept',
-    qualification: 'M.Sc., B.Ed.',
-    subject: 'Mathematics',
-    experience: 18,
-  },
-  {
-    name: 'Smt. Kavita Sharma',
-    designation: 'Head of Hindi Dept',
-    qualification: 'M.A., B.Ed.',
-    subject: 'Hindi Literature',
-    experience: 22,
-  },
-  {
-    name: 'Shri David Masih',
-    designation: 'Head of English Dept',
-    qualification: 'M.A. (English), B.Ed.',
-    subject: 'English',
-    experience: 19,
-  },
-  {
-    name: 'Shri Raghunath Singh',
-    designation: 'Head of Social Science Dept',
-    qualification: 'M.A. (History), B.Ed.',
-    subject: 'Social Science',
-    experience: 21,
-  },
-  {
-    name: 'Shri Vijendra Singh Rajput',
-    designation: 'Head of Physical Education',
-    qualification: 'M.P.Ed.',
-    subject: 'Physical Education',
-    experience: 15,
-  },
-  {
-    name: 'Shri Santosh Kumar Patel',
-    designation: 'Head of Computer Science',
-    qualification: 'M.C.A., B.Ed.',
-    subject: 'Computer Science',
-    experience: 12,
-  },
-  {
-    name: 'Smt. Meena Bhargava',
-    designation: 'Librarian',
-    qualification: 'B.Lib., M.A.',
-    subject: 'Library Science',
-    experience: 16,
-  },
-];
+const data = getSchoolData();
+const teachers = data.teachers;
 
 function getInitials(name: string) {
   return name
@@ -100,8 +29,8 @@ export default function TeachersPageComponent() {
       <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/teachers-group.png"
-            alt="Our Faculty - Govt. HSS Excellence"
+            src={data.images.teachersGroup}
+            alt={`Our Faculty - ${data.school.shortName}`}
             fill
             className="object-cover"
             priority
@@ -140,7 +69,7 @@ export default function TeachersPageComponent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="mb-12">
                 {teachers
-                  .filter((t) => t.isPrincipal)
+                  .filter((t) => t.designation === 'Principal')
                   .map((teacher) => (
                     <div
                       key={teacher.name}
@@ -158,7 +87,7 @@ export default function TeachersPageComponent() {
                           <div className="flex items-center gap-2 mb-2">
                             <Crown size={20} className="text-gse-gold" />
                             <span className="text-gse-gold font-semibold text-sm uppercase tracking-wider">
-                              Principal
+                              {teacher.designation}
                             </span>
                           </div>
                           <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
@@ -175,13 +104,13 @@ export default function TeachersPageComponent() {
                             </div>
                             <div className="flex items-center gap-2">
                               <Clock size={16} className="text-gse-gold" />
-                              <span className="text-gray-300 text-sm">{teacher.experience} years experience</span>
+                              <span className="text-gray-300 text-sm">{teacher.experience} experience</span>
                             </div>
                           </div>
                           <p className="text-gray-300 mt-4 text-sm leading-relaxed">
-                            A visionary leader with over {teacher.experience} years in education, dedicated to
-                            transforming Govt. HSS Excellence into a model institution of learning and character
-                            development under the Department of School Education, M.P.
+                            {teacher.specialRole} — A visionary leader with {teacher.experience} in education, dedicated to
+                            transforming {data.school.shortName} into a model institution of learning and character
+                            development under the {data.school.department}.
                           </p>
                         </div>
                       </div>
@@ -194,7 +123,7 @@ export default function TeachersPageComponent() {
             <ScrollReveal direction="up" delay={150}>
               <div className="mb-12">
                 {teachers
-                  .filter((t) => t.isVicePrincipal)
+                  .filter((t) => t.designation === 'Vice Principal')
                   .map((teacher) => (
                     <div
                       key={teacher.name}
@@ -212,7 +141,7 @@ export default function TeachersPageComponent() {
                           <div className="flex items-center gap-2 mb-2">
                             <Star size={18} className="text-gse-gold" />
                             <span className="text-gse-gold font-semibold text-sm uppercase tracking-wider">
-                              Vice Principal
+                              {teacher.designation}
                             </span>
                           </div>
                           <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
@@ -229,7 +158,7 @@ export default function TeachersPageComponent() {
                             </div>
                             <div className="flex items-center gap-2">
                               <Clock size={16} className="text-gse-gold" />
-                              <span className="text-gray-200 text-sm">{teacher.experience} years experience</span>
+                              <span className="text-gray-200 text-sm">{teacher.experience} experience</span>
                             </div>
                           </div>
                         </div>
@@ -242,7 +171,7 @@ export default function TeachersPageComponent() {
             {/* Other Teachers Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {teachers
-                .filter((t) => !t.isPrincipal && !t.isVicePrincipal)
+                .filter((t) => t.designation !== 'Principal' && t.designation !== 'Vice Principal')
                 .map((teacher, i) => (
                   <ScrollReveal key={teacher.name} direction="up" delay={i * 100}>
                     <div className="bg-white rounded-xl shadow-md overflow-hidden card-hover-lift h-full">
@@ -269,7 +198,7 @@ export default function TeachersPageComponent() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Clock size={14} className="text-gse-gold shrink-0" />
-                            <span className="text-gse-gray text-xs">{teacher.experience} years experience</span>
+                            <span className="text-gse-gray text-xs">{teacher.experience} experience</span>
                           </div>
                         </div>
                       </div>

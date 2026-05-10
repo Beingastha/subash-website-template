@@ -5,6 +5,9 @@ import { Quote, Target, Eye, BookOpen, Heart, Lightbulb, Star } from 'lucide-rea
 import Navigation from '@/components/shared/navigation';
 import Footer from '@/components/shared/footer';
 import ScrollReveal from '@/components/shared/scroll-reveal';
+import { getSchoolData } from '@/lib/school-data';
+
+const data = getSchoolData();
 
 export default function PrincipalPageComponent() {
   return (
@@ -35,17 +38,17 @@ export default function PrincipalPageComponent() {
                   <div className="relative">
                     <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                       <Image
-                        src="/images/principal.png"
-                        alt="Shri R.K. Sharma - Principal, Govt. HSS Excellence"
+                        src={data.images.principal}
+                        alt={`${data.principal.name} - Principal, ${data.school.shortName}`}
                         width={500}
                         height={600}
                         className="object-cover w-full h-[400px] md:h-[500px]"
                         quality={75}
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gse-green-dark/90 to-transparent p-6">
-                        <h3 className="text-2xl font-bold text-white">Shri R.K. Sharma</h3>
+                        <h3 className="text-2xl font-bold text-white">{data.principal.name}</h3>
                         <p className="text-gse-gold font-semibold">Principal</p>
-                        <p className="text-gray-300 text-sm mt-1">M.Ed., M.Phil.</p>
+                        <p className="text-gray-300 text-sm mt-1">{data.principal.qualification}</p>
                       </div>
                     </div>
                     {/* Gold border accent */}
@@ -68,52 +71,14 @@ export default function PrincipalPageComponent() {
                   </div>
 
                   <div className="space-y-4 text-gse-gray leading-relaxed">
-                    <p>
-                      Dear Students, Parents, and Well-wishers,
-                    </p>
-                    <p>
-                      It is with great pride and a deep sense of responsibility that I welcome you to
-                      Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal.
-                      As a School for Excellence under the Department of School Education, Government
-                      of Madhya Pradesh, our institution carries a special mandate — to provide
-                      world-class education to students from all sections of society, regardless of
-                      their economic or social background.
-                    </p>
-                    <p>
-                      Education is the most powerful tool for transformation, and at Govt. HSS Excellence,
-                      we believe that every child deserves the opportunity to discover and develop their
-                      full potential. Our dedicated faculty works tirelessly to create an environment that
-                      fosters academic rigor, critical thinking, and a love for learning. We do not merely
-                      teach subjects; we nurture minds, build character, and prepare our students to become
-                      responsible citizens and leaders of tomorrow.
-                    </p>
-                    <p>
-                      Our school is uniquely positioned to offer a holistic educational experience. Beyond
-                      academics, we take immense pride in our outstanding sports facilities — particularly
-                      in badminton, boxing, and cricket — where our students have consistently brought
-                      laurels at district and state levels. Our hostel facility ensures that students from
-                      remote areas have access to quality education in a safe and disciplined environment.
-                      The NCC and NSS units in our school instill values of service, discipline, and
-                      patriotism in our young learners.
-                    </p>
-                    <p>
-                      As a government school of excellence, we are committed to continuously raising the
-                      bar of educational quality. We have embraced modern teaching methodologies, digital
-                      learning tools, and project-based approaches to make learning more engaging and
-                      effective. Our science laboratories, computer lab, and library are regularly updated
-                      to meet the evolving needs of 21st century education.
-                    </p>
-                    <p>
-                      I invite you to be a part of the Govt. HSS Excellence family — where dreams take
-                      flight, where potential is transformed into achievement, and where every student is
-                      empowered to excel. Together, we can build a brighter future for our children and
-                      our nation.
-                    </p>
+                    {data.principal.message.split('\n\n').map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
                     <p className="font-semibold text-gse-charcoal mt-6">
                       With warm regards,<br />
-                      Shri R.K. Sharma<br />
+                      {data.principal.name}<br />
                       <span className="font-normal text-gse-gray text-sm">
-                        Principal, Govt. HSS Excellence, Subhash Shivaji Nagar, Bhopal
+                        Principal, {data.school.fullName}
                       </span>
                     </p>
                   </div>
@@ -136,10 +101,7 @@ export default function PrincipalPageComponent() {
                     <h3 className="text-2xl font-bold text-gse-charcoal">Our Vision</h3>
                   </div>
                   <p className="text-gse-gray leading-relaxed">
-                    To be a beacon of educational excellence in Madhya Pradesh, where every student
-                    — regardless of background — receives world-class education, discovers their unique
-                    potential, and is empowered to become a confident, compassionate, and responsible
-                    citizen who contributes positively to society and the nation.
+                    {data.principal.vision}
                   </p>
                 </div>
               </ScrollReveal>
@@ -152,21 +114,9 @@ export default function PrincipalPageComponent() {
                     </div>
                     <h3 className="text-2xl font-bold text-gse-charcoal">Our Mission</h3>
                   </div>
-                  <ul className="space-y-3">
-                    {[
-                      'Provide quality education aligned with MP Board standards and beyond',
-                      'Foster holistic development through academics, sports, and co-curricular activities',
-                      'Create an inclusive and nurturing environment for students from all backgrounds',
-                      'Develop scientific temper, critical thinking, and moral values in students',
-                      'Maintain state-of-the-art infrastructure and adopt modern teaching methodologies',
-                      'Produce responsible citizens who contribute to nation-building',
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Star size={16} className="text-gse-gold shrink-0 mt-1" />
-                        <span className="text-gse-gray text-sm leading-relaxed">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-gse-gray leading-relaxed">
+                    {data.principal.mission}
+                  </p>
                 </div>
               </ScrollReveal>
             </div>
