@@ -234,6 +234,36 @@ window.schoolData = {
     "library": "/images/library.png",
     "logo": "/images/logo.png"
   },
+  "notices": [
+    {
+      "id": 1,
+      "title": "Admissions Open 2026-27",
+      "date": "May 20, 2026",
+      "description": "Admissions are open for Class IX and XI for the academic session 2026-27. Registration forms can be submitted online or at the school office.",
+      "important": true
+    },
+    {
+      "id": 2,
+      "title": "ATAL Tinkering Lab Workshop",
+      "date": "May 18, 2026",
+      "description": "A 5-day workshop on Robotics, IoT, and 3D printing is being organized in the ATAL Tinkering Lab starting next Monday for Class IX-XII.",
+      "important": false
+    },
+    {
+      "id": 3,
+      "title": "Quarterly Timetable Released",
+      "date": "May 15, 2026",
+      "description": "The quarterly examination timetable for all classes has been released. Examinations will commence from June 10, 2026.",
+      "important": true
+    },
+    {
+      "id": 4,
+      "title": "Sports Selection Trials",
+      "date": "May 10, 2026",
+      "description": "Selection trials for the school badminton and boxing teams will be held at the sports complex on Friday at 3:00 PM.",
+      "important": false
+    }
+  ],
   "navLinks": [
     { "name": "Home", "href": "/" },
     { "name": "About", "href": "/#about" },
@@ -241,7 +271,6 @@ window.schoolData = {
     { "name": "Activities", "href": "/activities" },
     { "name": "Hostel", "href": "/hostel" },
     { "name": "Teachers", "href": "/teachers" },
-    { "name": "Principal", "href": "/principal" },
     { "name": "Contact", "href": "/contact" }
   ],
   "quickLinks": [
@@ -251,7 +280,7 @@ window.schoolData = {
     { "label": "Activities", "href": "/activities" },
     { "label": "Hostel", "href": "/hostel" },
     { "label": "Teachers", "href": "/teachers" },
-    { "label": "Principal", "href": "/principal" },
+    { "label": "Notices", "href": "/notices" },
     { "label": "Contact Us", "href": "/contact" }
   ]
 };

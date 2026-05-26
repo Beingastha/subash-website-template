@@ -30,50 +30,73 @@ function renderNavigation(activePage, data) {
   const header = document.getElementById('main-header');
   if (!header) return;
 
-  const navLinks = data.navLinks;
   const shortName = data.school.shortName.split(',')[0];
   const logoUrl = getImagePath(data.images.logo);
 
-  let linksHtml = '';
-  navLinks.forEach(link => {
-    let isActive = false;
-    const cleanHref = link.href;
-    if (cleanHref === '/' || cleanHref === '') {
-      isActive = activePage === 'home';
-    } else if (cleanHref.startsWith('/#')) {
-      isActive = activePage === 'home';
-    } else {
-      const pageName = cleanHref.replace('/', '');
-      isActive = activePage === pageName;
-    }
+  const homeActive = activePage === 'home' ? 'text-gse-gold font-semibold' : 'text-white';
+  const academicsActive = activePage === 'academics' ? 'text-gse-gold font-semibold' : 'text-white';
+  const activitiesActive = activePage === 'activities' ? 'text-gse-gold font-semibold' : 'text-white';
+  const hostelActive = activePage === 'hostel' ? 'text-gse-gold font-semibold' : 'text-white';
+  const teachersActive = activePage === 'teachers' ? 'text-gse-gold font-semibold' : 'text-white';
+  const aboutActive = (activePage === 'about' || activePage === 'principal') ? 'text-gse-gold font-semibold' : 'text-white';
 
-    let relativeHref = cleanHref;
-    if (cleanHref === '/' || cleanHref === '') {
-      relativeHref = 'index.html';
-    } else if (cleanHref.startsWith('/#')) {
-      relativeHref = 'index.html' + cleanHref.substring(1);
-    } else {
-      relativeHref = cleanHref.substring(1) + '.html';
-    }
+  const linksHtml = `
+    <a href="index.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${homeActive}">
+      Home
+    </a>
+    <div class="relative group inline-block">
+      <button class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 inline-flex items-center gap-1 ${aboutActive}">
+        About <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"></i>
+      </button>
+      <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 py-1 border border-gse-border">
+        <a href="index.html#about" class="block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors">
+          About School
+        </a>
+        <a href="principal.html" class="block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors">
+          From Principal's desk
+        </a>
+      </div>
+    </div>
+    <a href="index.html#academics" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${academicsActive}">
+      Academics
+    </a>
+    <a href="activities.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${activitiesActive}">
+      Activities
+    </a>
+    <a href="hostel.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${hostelActive}">
+      Hostel
+    </a>
+    <a href="teachers.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${teachersActive}">
+      Teachers
+    </a>
+  `;
 
-    const activeClass = isActive ? 'text-gse-gold font-semibold' : '';
-
-    linksHtml += `
-      <a href="${relativeHref}" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${activeClass}">
-        ${link.name}
+  const mobileLinksHtml = `
+    <a href="index.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Home
+    </a>
+    <div class="px-4 py-2 bg-gse-offwhite rounded-md border border-gse-border/50 my-1">
+      <span class="block text-xs font-semibold uppercase tracking-wider text-gse-gray/60 mb-1">About</span>
+      <a href="index.html#about" class="block pl-3 py-2 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+        About School
       </a>
-    `;
-  });
-
-  let mobileLinksHtml = '';
-  navLinks.forEach(link => {
-    let relativeHref = link.href === '/' ? 'index.html' : (link.href.startsWith('/#') ? 'index.html' + link.href.substring(1) : link.href.substring(1) + '.html');
-    mobileLinksHtml += `
-      <a href="${relativeHref}" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
-        ${link.name}
+      <a href="principal.html" class="block pl-3 py-2 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+        From Principal's desk
       </a>
-    `;
-  });
+    </div>
+    <a href="index.html#academics" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Academics
+    </a>
+    <a href="activities.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Activities
+    </a>
+    <a href="hostel.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Hostel
+    </a>
+    <a href="teachers.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Teachers
+    </a>
+  `;
 
   header.className = "fixed top-0 left-0 right-0 z-50 transition-all duration-300 nav-transparent";
   header.innerHTML = `

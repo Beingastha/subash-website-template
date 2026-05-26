@@ -79,6 +79,38 @@
   </section>
 
   <main class="flex-1">
+    <!-- Circulars/Notices Slider Section -->
+    <section id="notices-slider-section" class="py-8 bg-gse-offwhite border-b border-gse-border/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+            </span>
+            <h2 class="text-xl md:text-2xl font-bold text-gse-charcoal">Circulars & Notices</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="notice-prev" class="p-2 rounded-full border border-gse-border bg-white text-gse-charcoal hover:bg-gse-cream transition-colors" aria-label="Previous notice">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <button id="notice-next" class="p-2 rounded-full border border-gse-border bg-white text-gse-charcoal hover:bg-gse-cream transition-colors" aria-label="Next notice">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+            <a href="notices.html" class="ml-2 text-sm font-semibold text-gse-green hover:text-gse-green-light hover:underline flex items-center gap-1">
+              View All <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="relative overflow-hidden w-full h-[180px] sm:h-[155px]">
+          <div id="notices-wrapper" class="flex gap-6 transition-transform duration-500 ease-in-out absolute left-0 top-0 h-full w-full">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- About Section -->
     <section id="about" class="py-16 md:py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -333,6 +365,80 @@
           </div>
         `;
       }).join('');
+
+      // Initialize notices slider
+      const noticesWrapper = document.getElementById('notices-wrapper');
+      if (noticesWrapper && data.notices) {
+        noticesWrapper.innerHTML = data.notices.map(notice => `
+          <a href="notices.html?id=${notice.id}" class="notice-card shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] bg-white p-5 rounded-xl border border-gse-border shadow-sm hover:shadow-md hover:border-gse-gold transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gse-gray font-medium">${notice.date}</span>
+                ${notice.important ? '<span class="px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-700 rounded-full">Important</span>' : ''}
+              </div>
+              <h3 class="font-bold text-gse-charcoal text-sm group-hover:text-gse-green transition-colors line-clamp-1">${notice.title}</h3>
+              <p class="text-xs text-gse-gray leading-relaxed mt-1 line-clamp-2">${notice.description}</p>
+            </div>
+            <div class="flex items-center justify-end text-[11px] font-bold text-gse-green group-hover:translate-x-1 transition-transform duration-200 mt-2">
+              Read More <i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-0.5"></i>
+            </div>
+          </a>
+        `).join('');
+
+        let currentIndex = 0;
+        const totalItems = data.notices.length;
+        
+        function getItemsPerSlide() {
+          if (window.innerWidth >= 1024) return 3;
+          if (window.innerWidth >= 768) return 2;
+          return 1;
+        }
+
+        function updateSlider() {
+          const itemsPerSlide = getItemsPerSlide();
+          const maxIndex = Math.max(0, totalItems - itemsPerSlide);
+          if (currentIndex > maxIndex) currentIndex = maxIndex;
+          
+          const card = noticesWrapper.querySelector('.notice-card');
+          if (!card) return;
+          let cardWidth = card.offsetWidth;
+          let gap = 24; // gap-6
+          let offset = currentIndex * (cardWidth + gap);
+          noticesWrapper.style.transform = `translateX(-${offset}px)`;
+        }
+
+        document.getElementById('notice-prev').addEventListener('click', () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            updateSlider();
+          }
+        });
+
+        document.getElementById('notice-next').addEventListener('click', () => {
+          const itemsPerSlide = getItemsPerSlide();
+          const maxIndex = Math.max(0, totalItems - itemsPerSlide);
+          if (currentIndex < maxIndex) {
+            currentIndex++;
+            updateSlider();
+          }
+        });
+
+        window.addEventListener('resize', updateSlider);
+        // Initial call
+        setTimeout(updateSlider, 200);
+
+        // Auto slide
+        setInterval(() => {
+          const itemsPerSlide = getItemsPerSlide();
+          const maxIndex = Math.max(0, totalItems - itemsPerSlide);
+          if (currentIndex < maxIndex) {
+            currentIndex++;
+          } else {
+            currentIndex = 0;
+          }
+          updateSlider();
+        }, 6000);
+      }
 
       lucide.createIcons();
     }
