@@ -5,6 +5,10 @@ let schoolData = null;
 // Fetch and load database data
 async function loadSchoolData() {
   if (schoolData) return schoolData;
+  if (window.schoolData) {
+    schoolData = window.schoolData;
+    return schoolData;
+  }
   try {
     const response = await fetch('data/school-data.json');
     if (!response.ok) throw new Error('Network response was not ok');
