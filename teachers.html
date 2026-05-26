@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Faculty — Govt. HSS Excellence, Bhopal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'gse-green': '#0D5E3A',
+            'gse-green-dark': '#094028',
+            'gse-green-light': '#128250',
+            'gse-gold': '#D4AF37',
+            'gse-gold-light': '#F3E5AB',
+            'gse-charcoal': '#232B2B',
+            'gse-gray': '#555555',
+            'gse-cream': '#FDF8EE',
+            'gse-offwhite': '#F5F5F5',
+            'gse-border': '#E5E5E5',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-white text-gse-charcoal">
+  <header id="main-header"></header>
+
+  <!-- Hero Banner -->
+  <section class="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img id="hero-img" src="" alt="Our Faculty" class="object-cover w-full h-full" />
+      <div class="absolute inset-0 bg-gradient-to-b from-gse-green-dark/80 via-gse-green/70 to-gse-green-dark/90"></div>
+    </div>
+    <div class="relative z-10 text-center px-4">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+        Our <span class="text-gse-gold">Faculty</span>
+      </h1>
+      <p class="text-gray-200 text-lg max-w-2xl mx-auto">
+        Dedicated educators shaping the future of our students with knowledge, wisdom, and commitment
+      </p>
+    </div>
+  </section>
+
+  <main class="flex-1 bg-gse-offwhite">
+    <section class="py-12 md:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Meet Our Educators
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Our faculty comprises experienced and qualified educators who are passionate about teaching and committed to the all-round development of every student.
+          </p>
+        </div>
+
+        <!-- Principal Card Container -->
+        <div id="principal-card-container" class="mb-12 animate-on-scroll">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Vice Principal Card Container -->
+        <div id="vice-principal-card-container" class="mb-12 animate-on-scroll">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Other Faculty Grid -->
+        <div id="faculty-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    function getInitials(name) {
+      return name
+        .replace(/^(Shri|Smt|Dr|Prof)\.?\s*/i, '')
+        .split(' ')
+        .filter(n => n.length > 0)
+        .map(n => n[0])
+        .join('')
+        .substring(0, 2);
+    }
+
+    function initTeachers(data) {
+      document.getElementById('hero-img').src = getImagePath(data.images.teachersGroup);
+
+      const teachers = data.teachers;
+
+      // Principal card
+      const principalContainer = document.getElementById('principal-card-container');
+      const principal = teachers.find(t => t.designation === 'Principal');
+      if (principal) {
+        const initials = getInitials(principal.name);
+        principalContainer.innerHTML = `
+          <div class="bg-gradient-to-r from-gse-green to-gse-green-dark rounded-2xl overflow-hidden shadow-xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+              <div class="flex items-center justify-center p-8 md:p-12">
+                <div class="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gse-gold/20 border-4 border-gse-gold flex items-center justify-center">
+                  <span class="text-4xl md:text-5xl font-bold text-gse-gold">${initials}</span>
+                </div>
+              </div>
+              <div class="md:col-span-2 p-6 md:p-12 flex flex-col justify-center">
+                <div class="flex items-center gap-2 mb-2">
+                  <i data-lucide="crown" class="w-5 h-5 text-gse-gold"></i>
+                  <span class="text-gse-gold font-semibold text-sm uppercase tracking-wider">${principal.designation}</span>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold text-white mb-3">${principal.name}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-300 text-sm">${principal.qualification}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-300 text-sm">${principal.subject}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-300 text-sm">${principal.experience} experience</span>
+                  </div>
+                </div>
+                <p class="text-gray-300 mt-4 text-sm leading-relaxed">
+                  ${principal.specialRole} — A visionary leader with ${principal.experience} in education, dedicated to transforming ${data.school.shortName} into a model institution of learning and character development under the ${data.school.department}.
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Vice Principal Card
+      const vpContainer = document.getElementById('vice-principal-card-container');
+      const vp = teachers.find(t => t.designation === 'Vice Principal');
+      if (vp) {
+        const initials = getInitials(vp.name);
+        vpContainer.innerHTML = `
+          <div class="bg-gradient-to-r from-gse-green-light to-gse-green rounded-2xl overflow-hidden shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+              <div class="flex items-center justify-center p-6 md:p-10">
+                <div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-gse-gold/20 border-4 border-gse-gold flex items-center justify-center">
+                  <span class="text-3xl md:text-4xl font-bold text-gse-gold">${initials}</span>
+                </div>
+              </div>
+              <div class="md:col-span-2 p-6 md:p-10 flex flex-col justify-center">
+                <div class="flex items-center gap-2 mb-2">
+                  <i data-lucide="star" class="w-4.5 h-4.5 text-gse-gold"></i>
+                  <span class="text-gse-gold font-semibold text-sm uppercase tracking-wider">${vp.designation}</span>
+                </div>
+                <h3 class="text-xl md:text-2xl font-bold text-white mb-3">${vp.name}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-200 text-sm">${vp.qualification}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-200 text-sm">${vp.subject}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-gse-gold"></i>
+                    <span class="text-gray-200 text-sm">${vp.experience} experience</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // HODs/Other teachers list
+      const facultyGrid = document.getElementById('faculty-grid');
+      const otherTeachers = teachers.filter(t => t.designation !== 'Principal' && t.designation !== 'Vice Principal');
+      facultyGrid.innerHTML = otherTeachers.map((teacher, idx) => {
+        const initials = getInitials(teacher.name);
+        return `
+          <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover-lift h-full animate-on-scroll" style="transition-delay: ${idx * 100}ms">
+            <div class="bg-gse-green/5 p-6 flex justify-center">
+              <div class="w-24 h-24 rounded-full bg-gse-green flex items-center justify-center">
+                <span class="text-2xl font-bold text-white">${initials}</span>
+              </div>
+            </div>
+            <div class="p-5">
+              <h3 class="text-lg font-bold text-gse-charcoal mb-1">${teacher.name}</h3>
+              <p class="text-gse-green font-semibold text-sm mb-3">${teacher.designation}</p>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="book-open" class="w-3.5 h-3.5 text-gse-gold shrink-0"></i>
+                  <span class="text-gse-gray text-xs">${teacher.qualification}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="award" class="w-3.5 h-3.5 text-gse-gold shrink-0"></i>
+                  <span class="text-gse-gray text-xs">${teacher.subject}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-gse-gold shrink-0"></i>
+                  <span class="text-gse-gray text-xs">${teacher.experience} experience</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadSchoolData();
+      if (data) {
+        renderNavigation('teachers', data);
+        renderFooter(data);
+        initTeachers(data);
+        initScrollReveal();
+      }
+    });
+  </script>
+</body>
+</html>

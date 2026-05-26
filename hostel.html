@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Facilities — Govt. HSS Excellence, Bhopal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'gse-green': '#0D5E3A',
+            'gse-green-dark': '#094028',
+            'gse-green-light': '#128250',
+            'gse-gold': '#D4AF37',
+            'gse-gold-light': '#F3E5AB',
+            'gse-charcoal': '#232B2B',
+            'gse-gray': '#555555',
+            'gse-cream': '#FDF8EE',
+            'gse-offwhite': '#F5F5F5',
+            'gse-border': '#E5E5E5',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-white text-gse-charcoal">
+  <header id="main-header"></header>
+
+  <!-- Hero Banner -->
+  <section class="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img id="hero-img" src="" alt="Hostel" class="object-cover w-full h-full" />
+      <div class="absolute inset-0 bg-gradient-to-b from-gse-green-dark/80 via-gse-green/70 to-gse-green-dark/90"></div>
+    </div>
+    <div class="relative z-10 text-center px-4">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+        Hostel <span class="text-gse-gold">Facilities</span>
+      </h1>
+      <p class="text-gray-200 text-lg max-w-2xl mx-auto">
+        Safe, comfortable, and disciplined living for boys — a home away from home
+      </p>
+    </div>
+  </section>
+
+  <main class="flex-1">
+    <!-- Overview Section -->
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center animate-on-scroll">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line">
+              Hostel Overview
+            </h2>
+            <div class="h-1 w-16 bg-gse-gold mb-6 rounded-full"></div>
+            <p id="hostel-overview-text" class="text-gse-gray leading-relaxed mb-4"></p>
+            <div class="flex gap-4 mt-4">
+              <div class="bg-gse-cream rounded-lg px-4 py-3 text-center">
+                <p id="hostel-capacity" class="text-gse-green font-bold text-lg"></p>
+                <p class="text-gse-gray text-xs font-medium">Capacity</p>
+              </div>
+              <div class="bg-gse-cream rounded-lg px-4 py-3 text-center">
+                <p id="hostel-type" class="text-gse-green font-bold text-lg"></p>
+                <p class="text-gse-gray text-xs font-medium">Type</p>
+              </div>
+            </div>
+          </div>
+          <div class="relative image-hover-zoom rounded-2xl overflow-hidden shadow-xl">
+            <img id="hostel-overview-img" src="" alt="Hostel Building" class="object-cover w-full h-[350px]" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-12 md:py-16 bg-gse-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Hostel Features
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Everything your child needs for a comfortable and productive stay
+          </p>
+        </div>
+
+        <div id="features-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Hostel Gallery
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+        </div>
+
+        <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section class="py-12 md:py-16 bg-gse-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Rules & Regulations
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            All hostel residents must adhere to the following rules for a safe and disciplined environment
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 md:p-8 max-w-3xl mx-auto animate-on-scroll">
+          <ul id="rules-list" class="space-y-4">
+            <!-- Rendered dynamically -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wardens Section -->
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Hostel Wardens
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Experienced and caring wardens ensure the safety and well-being of all hostel residents
+          </p>
+        </div>
+
+        <div id="wardens-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-12 md:py-16 bg-gradient-to-r from-gse-green to-gse-green-dark">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Contact for Hostel Admission
+          </h2>
+          <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
+            Interested in hostel facilities? Contact us to learn more about the admission process, fees, and availability. We ensure a safe and supportive environment for your child.
+          </p>
+          <a href="contact.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gse-gold text-gse-charcoal font-bold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl">
+            Contact Us <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    function initHostel(data) {
+      document.getElementById('hero-img').src = getImagePath(data.images.hostel);
+
+      // Overview
+      document.getElementById('hostel-overview-text').textContent = data.hostel.overview;
+      document.getElementById('hostel-capacity').textContent = data.hostel.capacity;
+      document.getElementById('hostel-type').textContent = data.hostel.type;
+      document.getElementById('hostel-overview-img').src = getImagePath(data.images.hostel);
+
+      // Features list
+      const iconMap = {
+        'Bed': 'bed-double',
+        'UtensilsCrossed': 'utensils-crossed',
+        'BookOpen': 'book-open',
+        'Gamepad2': 'gamepad-2',
+        'ShieldCheck': 'shield-check',
+        'HeartPulse': 'heart-pulse'
+      };
+      const featuresGrid = document.getElementById('features-grid');
+      featuresGrid.innerHTML = data.hostel.features.map((feat, idx) => `
+        <div class="bg-white p-6 rounded-xl shadow-md card-hover-lift h-full animate-on-scroll" style="transition-delay: ${idx * 100}ms">
+          <div class="w-14 h-14 rounded-xl bg-gse-green/10 flex items-center justify-center mb-4">
+            <i data-lucide="${iconMap[feat.icon] || 'shield-check'}" class="w-7 h-7 text-gse-green"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gse-charcoal mb-2">${feat.title}</h3>
+          <p class="text-gse-gray text-sm leading-relaxed">${feat.description}</p>
+        </div>
+      `).join('');
+
+      // Gallery grid
+      const galleryGrid = document.getElementById('gallery-grid');
+      const galleryItems = [
+        { label: 'Hostel Exterior', sub: 'Building view' },
+        { label: 'Study Hall', sub: 'Evening study time' },
+        { label: 'Common Room', sub: 'Recreation area' }
+      ];
+      galleryGrid.innerHTML = galleryItems.map((item, idx) => `
+        <div class="relative image-hover-zoom rounded-xl overflow-hidden shadow-lg h-64 animate-on-scroll" style="transition-delay: ${idx * 150}ms">
+          <img src="${getImagePath(data.images.hostel)}" alt="${item.label}" class="object-cover w-full h-full" />
+          <div class="absolute inset-0 bg-gradient-to-t from-gse-green-dark/80 to-transparent"></div>
+          <div class="absolute bottom-4 left-4">
+            <p class="text-white font-bold">${item.label}</p>
+            <p class="text-gse-gold text-sm">${item.sub}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Rules list
+      const rulesList = document.getElementById('rules-list');
+      rulesList.innerHTML = data.hostel.rules.map(rule => `
+        <li class="flex items-start gap-3">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-gse-green shrink-0 mt-0.5"></i>
+          <span class="text-gse-gray text-sm leading-relaxed">${rule}</span>
+        </li>
+      `).join('');
+
+      // Wardens list
+      const wardensContainer = document.getElementById('wardens-container');
+      wardensContainer.innerHTML = data.hostel.wardens.map((warden, idx) => `
+        <div class="bg-gse-offwhite rounded-xl shadow-md p-6 card-hover-lift border border-gse-border animate-on-scroll" style="transition-delay: ${idx * 100}ms">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-16 h-16 rounded-full bg-gse-green flex items-center justify-center shrink-0">
+              <i data-lucide="user" class="w-7 h-7 text-white"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gse-charcoal">${warden.name}</h3>
+              <p class="text-gse-green font-semibold text-sm">${warden.designation}</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-gse-gold"></i>
+              <span class="text-gse-gray text-sm">${warden.qualification}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="clock" class="w-4 h-4 text-gse-gold"></i>
+              <span class="text-gse-gray text-sm">${warden.experience} experience</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="phone" class="w-4 h-4 text-gse-gold"></i>
+              <span class="text-gse-gray text-sm">${warden.phone}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadSchoolData();
+      if (data) {
+        renderNavigation('hostel', data);
+        renderFooter(data);
+        initHostel(data);
+        initScrollReveal();
+      }
+    });
+  </script>
+</body>
+</html>

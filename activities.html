@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports & Activities — Govt. HSS Excellence, Bhopal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'gse-green': '#0D5E3A',
+            'gse-green-dark': '#094028',
+            'gse-green-light': '#128250',
+            'gse-gold': '#D4AF37',
+            'gse-gold-light': '#F3E5AB',
+            'gse-charcoal': '#232B2B',
+            'gse-gray': '#555555',
+            'gse-cream': '#FDF8EE',
+            'gse-offwhite': '#F5F5F5',
+            'gse-border': '#E5E5E5',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-white text-gse-charcoal">
+  <header id="main-header"></header>
+
+  <!-- Hero Banner -->
+  <section class="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img id="hero-img" src="" alt="Sports & Activities" class="object-cover w-full h-full" />
+      <div class="absolute inset-0 bg-gradient-to-b from-gse-green-dark/80 via-gse-green/70 to-gse-green-dark/90"></div>
+    </div>
+    <div class="relative z-10 text-center px-4">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+        Sports & <span class="text-gse-gold">Activities</span>
+      </h1>
+      <p class="text-gray-200 text-lg max-w-2xl mx-auto">
+        Building champions on and off the field — excellence in sports is at the heart of our school
+      </p>
+    </div>
+  </section>
+
+  <main class="flex-1">
+    <!-- Featured Activities -->
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Featured Sports
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Our school takes special pride in these three sports, with dedicated facilities, coaching, and a track record of producing champions.
+          </p>
+        </div>
+
+        <div id="featured-activities-list" class="space-y-16">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Additional Activities -->
+    <section class="py-12 md:py-16 bg-gse-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            More Activities
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Beyond our featured sports, students can explore a wide range of activities for physical fitness and character building.
+          </p>
+        </div>
+
+        <div id="other-activities-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section class="py-12 md:py-16 bg-gse-green relative overflow-hidden">
+      <div class="absolute inset-0 pattern-overlay"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">
+            Notable <span class="text-gse-gold">Achievements</span>
+          </h2>
+          <p class="text-gray-300 max-w-2xl mx-auto">
+            Our students continue to make us proud with outstanding performances in sports
+          </p>
+        </div>
+
+        <div id="achievements-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-4">
+            Interested in Sports?
+          </h2>
+          <p class="text-gse-gray mb-8 max-w-2xl mx-auto">
+            Join our School of Excellence and get access to professional coaching, modern facilities, and opportunities to compete at the highest level.
+          </p>
+          <a href="contact.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gse-green text-white font-bold rounded-lg hover:bg-gse-green-light transition-all duration-300 shadow-md hover:shadow-lg">
+            Enquire Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    function initActivities(data) {
+      document.getElementById('hero-img').src = getImagePath(data.images.sports);
+
+      // Featured Activities list
+      const featuredList = document.getElementById('featured-activities-list');
+      featuredList.innerHTML = data.activities.featured.map((act, idx) => {
+        const isEven = idx % 2 === 0;
+        const flexReverseClass = isEven ? '' : 'lg:flex-row-reverse';
+        const order2Class = isEven ? '' : 'lg:order-2';
+        const order1Class = isEven ? '' : 'lg:order-1';
+
+        const achievementsList = act.achievements.split(', ').map(ach => `
+          <div class="flex items-start gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-gse-gold shrink-0 mt-1"></i>
+            <span class="text-gse-gray text-sm">${ach}</span>
+          </div>
+        `).join('');
+
+        const descParagraphs = act.description.split('\n\n').map(p => `
+          <p class="text-gse-gray leading-relaxed mb-4 text-sm md:text-base">${p}</p>
+        `).join('');
+
+        return `
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center ${flexReverseClass} animate-on-scroll">
+            <div class="${order2Class}">
+              <div class="relative image-hover-zoom rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[400px]">
+                <img src="${getImagePath(act.image)}" alt="${act.title}" class="object-cover w-full h-full" />
+                <div class="absolute top-4 left-4 px-4 py-2 bg-gse-gold rounded-full">
+                  <span class="text-gse-charcoal font-bold text-sm flex items-center gap-2">
+                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                    ${act.title}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="${order1Class}">
+              <h3 class="text-2xl md:text-3xl font-bold text-gse-charcoal mb-4 flex items-center gap-3">
+                <i data-lucide="medal" class="w-7 h-7 text-gse-gold"></i>
+                ${act.title}
+              </h3>
+              ${descParagraphs}
+              <div class="mt-4 space-y-2">
+                <h4 class="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2">
+                  <i data-lucide="star" class="w-4 h-4 text-gse-gold"></i>
+                  Facilities
+                </h4>
+                <p class="text-gse-gray text-sm">${act.facilities}</p>
+                
+                <h4 class="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
+                  <i data-lucide="star" class="w-4 h-4 text-gse-gold"></i>
+                  Coaching
+                </h4>
+                <p class="text-gse-gray text-sm">${act.coaching}</p>
+
+                <h4 class="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
+                  <i data-lucide="star" class="w-4 h-4 text-gse-gold"></i>
+                  Key Achievements
+                </h4>
+                <div class="space-y-1">${achievementsList}</div>
+
+                <h4 class="text-gse-green font-semibold text-sm flex items-center gap-2 mb-2 mt-3">
+                  <i data-lucide="star" class="w-4 h-4 text-gse-gold"></i>
+                  Schedule
+                </h4>
+                <p class="text-gse-gray text-sm">${act.schedule}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Other activities
+      const otherGrid = document.getElementById('other-activities-grid');
+      const iconMap = {
+        'Swords': 'swords',
+        'Zap': 'zap',
+        'CircleDot': 'circle-dot',
+        'Heart': 'heart',
+        'Shield': 'shield',
+        'Users': 'users'
+      };
+      otherGrid.innerHTML = data.activities.other.map((act, idx) => `
+        <div class="bg-white p-6 rounded-xl shadow-md card-hover-lift h-full flex items-start gap-4 animate-on-scroll" style="transition-delay: ${idx * 100}ms">
+          <div class="w-12 h-12 rounded-xl bg-gse-green/10 flex items-center justify-center shrink-0">
+            <i data-lucide="${iconMap[act.icon] || 'users'}" class="w-6 h-6 text-gse-green"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gse-charcoal mb-1">${act.title}</h3>
+            <p class="text-gse-gray text-sm leading-relaxed">${act.description}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Achievements
+      const achievementsContainer = document.getElementById('achievements-container');
+      achievementsContainer.innerHTML = data.activities.achievements.map((ach, idx) => `
+        <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 flex items-start gap-3 animate-on-scroll" style="transition-delay: ${idx * 80}ms">
+          <i data-lucide="trophy" class="w-5 h-5 text-gse-gold shrink-0 mt-0.5"></i>
+          <p class="text-white text-sm leading-relaxed">${ach}</p>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadSchoolData();
+      if (data) {
+        renderNavigation('activities', data);
+        renderFooter(data);
+        initActivities(data);
+        initScrollReveal();
+      }
+    });
+  </script>
+</body>
+</html>

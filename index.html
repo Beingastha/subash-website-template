@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Govt. HSS Excellence, Subhash Nagar, Bhopal — Nurturing Tomorrow's Leaders</title>
+  <meta name="description" content="Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal — A Government School of Distinction under the Department of School Education, Madhya Pradesh.">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'gse-green': '#0D5E3A',
+            'gse-green-dark': '#094028',
+            'gse-green-light': '#128250',
+            'gse-gold': '#D4AF37',
+            'gse-gold-light': '#F3E5AB',
+            'gse-charcoal': '#232B2B',
+            'gse-gray': '#555555',
+            'gse-cream': '#FDF8EE',
+            'gse-offwhite': '#F5F5F5',
+            'gse-border': '#E5E5E5',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-white text-gse-charcoal">
+  <!-- Shared Header -->
+  <header id="main-header"></header>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img id="hero-img" src="" alt="Campus Hero Image" class="object-cover w-full h-full" />
+      <div class="absolute inset-0 bg-gradient-to-b from-gse-green/80 via-gse-green-dark/70 to-gse-green-dark/90"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
+      <div class="inline-block mb-4 px-4 py-1.5 bg-gse-gold/20 border border-gse-gold/40 rounded-full animate-on-scroll">
+        <span id="hero-dept" class="text-gse-gold text-sm font-medium"></span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-on-scroll delay-100">
+        School for <span class="text-gse-gold">Excellence</span>,<br />
+        <span id="hero-city"></span>
+      </h1>
+
+      <p id="hero-subtitle" class="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed animate-on-scroll delay-200"></p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll delay-300">
+        <a href="contact.html" class="px-8 py-3.5 bg-gse-gold text-gse-charcoal font-semibold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+          Apply Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="principal.html" class="px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
+          Principal's Message
+        </a>
+      </div>
+
+      <!-- Floating Stats -->
+      <div id="floating-stats" class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto animate-on-scroll delay-500">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Bouncing scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce-subtle">
+      <i data-lucide="chevron-down" class="w-8 h-8 text-gse-gold"></i>
+    </div>
+  </section>
+
+  <main class="flex-1">
+    <!-- About Section -->
+    <section id="about" class="py-16 md:py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="animate-on-scroll-left">
+            <div class="relative image-hover-zoom rounded-2xl overflow-hidden shadow-2xl">
+              <img id="about-img" src="" alt="School Entrance" class="object-cover w-full h-[350px] md:h-[450px]" />
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gse-green-dark/80 to-transparent p-6">
+                <p id="about-est" class="text-gse-gold font-semibold text-sm"></p>
+                <p id="about-type" class="text-white text-xl font-bold"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="animate-on-scroll-right">
+            <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line">
+              About Our School
+            </h2>
+            <div class="h-1 w-16 bg-gse-gold mb-6 rounded-full"></div>
+            <p id="about-text-1" class="text-gse-gray leading-relaxed mb-4"></p>
+            <p id="about-text-2" class="text-gse-gray leading-relaxed mb-6"></p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="text-center p-4 bg-gse-cream rounded-lg">
+                <i data-lucide="target" class="w-7 h-7 text-gse-green mx-auto mb-2"></i>
+                <p class="font-semibold text-gse-charcoal text-sm">Mission-Driven</p>
+                <p class="text-gse-gray text-xs mt-1">Quality education for all</p>
+              </div>
+              <div class="text-center p-4 bg-gse-cream rounded-lg">
+                <i data-lucide="lightbulb" class="w-7 h-7 text-gse-green mx-auto mb-2"></i>
+                <p class="font-semibold text-gse-charcoal text-sm">Innovation</p>
+                <p class="text-gse-gray text-xs mt-1">Modern teaching methods</p>
+              </div>
+              <div class="text-center p-4 bg-gse-cream rounded-lg">
+                <i data-lucide="heart" class="w-7 h-7 text-gse-green mx-auto mb-2"></i>
+                <p class="font-semibold text-gse-charcoal text-sm">Holistic Growth</p>
+                <p class="text-gse-gray text-xs mt-1">Beyond academics</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Academics Section -->
+    <section id="academics" class="py-16 md:py-24 bg-gse-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Academics
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p id="academics-desc" class="text-gse-gray max-w-2xl mx-auto"></p>
+        </div>
+
+        <div id="academics-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Activities Preview Section -->
+    <section class="py-16 md:py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            Sports & Activities
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Our school takes pride in its outstanding sports facilities and coaching, producing champions at district and state levels.
+          </p>
+        </div>
+
+        <div id="activities-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="text-center mt-10 animate-on-scroll delay-300">
+          <a href="activities.html" class="inline-flex items-center gap-2 px-8 py-3 bg-gse-green text-white font-semibold rounded-lg hover:bg-gse-green-light transition-all duration-300 shadow-md hover:shadow-lg">
+            View All Activities <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-16 md:py-20 bg-gse-green relative overflow-hidden">
+      <div class="absolute inset-0 pattern-overlay"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div id="stats-grid" class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 md:py-24 bg-gse-offwhite">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 animate-on-scroll">
+          <h2 class="text-3xl md:text-4xl font-bold text-gse-charcoal mb-2 gold-accent-line-center">
+            What People Say
+          </h2>
+          <div class="h-1 w-16 bg-gse-gold mb-4 rounded-full mx-auto"></div>
+          <p class="text-gse-gray max-w-2xl mx-auto">
+            Hear from our students, parents, and alumni about their experience.
+          </p>
+        </div>
+
+        <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Admissions CTA Section -->
+    <section class="py-16 md:py-20 bg-gradient-to-br from-gse-green via-gse-green-dark to-gse-green relative overflow-hidden">
+      <div class="absolute inset-0 geometric-pattern"></div>
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="animate-on-scroll">
+          <div class="inline-block mb-4 px-4 py-1.5 bg-gse-gold/20 border border-gse-gold/40 rounded-full">
+            <span class="text-gse-gold text-sm font-semibold animate-pulse-gold">
+              Admissions Open
+            </span>
+          </div>
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">
+            Admissions Open for New Session
+          </h2>
+          <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+            Join our School of Excellence and give your child the opportunity to learn, grow, and excel in a nurturing environment. Limited seats available.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="contact.html" class="px-8 py-3.5 bg-gse-gold text-gse-charcoal font-bold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+              Apply Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="contact.html" class="px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
+              Contact for Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Shared Footer -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    // Page specific rendering logic
+    function initHome(data) {
+      // Hero
+      document.getElementById('hero-img').src = getImagePath(data.images.hero);
+      document.getElementById('hero-dept').textContent = data.school.department;
+      document.getElementById('hero-city').textContent = data.school.address.city;
+      document.getElementById('hero-subtitle').textContent = `Nurturing Tomorrow's Leaders — A ${data.school.type} in ${data.school.address.area}`;
+
+      // Floating Stats (Badge list)
+      const floatingStats = document.getElementById('floating-stats');
+      const stats = [
+        { label: data.school.type, icon: 'badge-check' },
+        { label: data.school.board, icon: 'graduation-cap' },
+        { label: 'Excellence in Sports', icon: 'award' },
+        { label: data.school.address.area, icon: 'target' },
+      ];
+      floatingStats.innerHTML = stats.map(s => `
+        <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 text-center">
+          <i data-lucide="${s.icon}" class="w-6 h-6 text-gse-gold mx-auto mb-2"></i>
+          <p class="text-white text-sm font-medium">${s.label}</p>
+        </div>
+      `).join('');
+
+      // About
+      document.getElementById('about-img').src = getImagePath(data.images.hero);
+      document.getElementById('about-est').textContent = `Since ${data.school.establishedYear}`;
+      document.getElementById('about-type').textContent = data.school.type;
+      document.getElementById('about-text-1').textContent = `${data.school.fullName} is a premier government institution under the ${data.school.department}. As a designated School for Excellence, we are committed to providing world-class education to students from all sections of society.`;
+      document.getElementById('about-text-2').textContent = `Affiliated with the ${data.school.board}, our school offers a comprehensive curriculum in ${data.academics.streams.join(', ')} streams at the higher secondary level. With dedicated faculty, modern infrastructure, and a focus on holistic development, we strive to nurture responsible citizens and future leaders.`;
+
+      // Academics
+      document.getElementById('academics-desc').textContent = data.academics.description;
+      const academicsGrid = document.getElementById('academics-grid');
+      const iconMap = {
+        'FlaskConical': 'flask-conical',
+        'Monitor': 'monitor',
+        'BookOpen': 'book-open'
+      };
+      academicsGrid.innerHTML = data.academics.facilities.map((fac, idx) => `
+        <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover-lift animate-on-scroll" style="transition-delay: ${idx * 150}ms">
+          <div class="relative h-52 image-hover-zoom">
+            <img src="${getImagePath(fac.image)}" alt="${fac.title}" class="object-cover w-full h-full" />
+            <div class="absolute top-4 left-4 w-10 h-10 bg-gse-green rounded-full flex items-center justify-center shadow-lg">
+              <i data-lucide="${iconMap[fac.icon] || 'book-open'}" class="w-5 h-5 text-white"></i>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gse-charcoal mb-2">${fac.title}</h3>
+            <p class="text-gse-gray text-sm leading-relaxed">${fac.description}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Activities
+      const activitiesGrid = document.getElementById('activities-grid');
+      activitiesGrid.innerHTML = data.activities.featured.map((act, idx) => `
+        <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gse-border card-hover-lift animate-on-scroll" style="transition-delay: ${idx * 150}ms">
+          <div class="relative h-56 image-hover-zoom">
+            <img src="${getImagePath(act.image)}" alt="${act.title}" class="object-cover w-full h-full" />
+            <div class="absolute inset-0 bg-gradient-to-t from-gse-green-dark/70 to-transparent"></div>
+            <h3 class="absolute bottom-4 left-4 text-white text-xl font-bold">${act.title}</h3>
+          </div>
+          <div class="p-5">
+            <p class="text-gse-gray text-sm leading-relaxed">${act.description.split('\n\n')[0]}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Statistics Counter
+      const statsGrid = document.getElementById('stats-grid');
+      statsGrid.innerHTML = data.statistics.map(s => `
+        <div class="text-center">
+          <p class="text-4xl md:text-5xl font-bold text-gse-gold mb-2 stat-number" data-value="${parseInt(s.value)}" data-suffix="${s.suffix}">0</p>
+          <p class="text-gray-200 text-sm font-medium">${s.label}</p>
+        </div>
+      `).join('');
+
+      // Testimonials
+      const testimonialsGrid = document.getElementById('testimonials-grid');
+      testimonialsGrid.innerHTML = data.testimonials.map((t, idx) => {
+        let starsHtml = '';
+        for (let i = 0; i < t.stars; i++) {
+          starsHtml += `<i data-lucide="star" class="w-4 h-4 fill-gse-gold text-gse-gold"></i>`;
+        }
+        const initials = t.name.split(' ').map(n => n[0]).join('');
+
+        return `
+          <div class="bg-white p-6 md:p-8 rounded-xl shadow-md card-hover-lift relative animate-on-scroll" style="transition-delay: ${idx * 150}ms">
+            <span class="quote-mark absolute top-4 right-4 leading-none">&ldquo;</span>
+            <div class="flex gap-1 mb-4">${starsHtml}</div>
+            <p class="text-gse-gray text-sm leading-relaxed mb-6 italic">&ldquo;${t.quote}&rdquo;</p>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gse-green flex items-center justify-center text-white font-bold text-sm">
+                ${initials}
+              </div>
+              <div>
+                <p class="font-semibold text-gse-charcoal text-sm">${t.name}</p>
+                <p class="text-gse-gray text-xs">${t.role}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Trigger loading
+    window.addEventListener('DOMContentLoaded', async () => {
+      const data = await loadSchoolData();
+      if (data) {
+        renderNavigation('home', data);
+        renderFooter(data);
+        initHome(data);
+        initScrollReveal();
+        initCounters();
+      }
+    });
+  </script>
+</body>
+</html>
