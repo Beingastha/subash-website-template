@@ -46,7 +46,7 @@
     </div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 md:pt-20">
-      <div class="inline-block mb-4 px-4 py-1.5 bg-gse-gold/20 border border-gse-gold/40 rounded-full animate-on-scroll">
+      <div class="hidden sm:inline-block mb-4 px-4 py-1.5 bg-gse-gold/20 border border-gse-gold/40 rounded-full animate-on-scroll">
         <span id="hero-dept" class="text-gse-gold text-sm font-medium"></span>
       </div>
 
@@ -55,13 +55,13 @@
         <span id="hero-city"></span>
       </h1>
 
-      <p id="hero-subtitle" class="text-sm sm:text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed animate-on-scroll delay-200"></p>
+      <p id="hero-subtitle" class="text-xs sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed animate-on-scroll delay-200 px-2"></p>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll delay-300">
-        <a href="contact.html" class="px-8 py-3.5 bg-gse-gold text-gse-charcoal font-semibold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-xs sm:max-w-none mx-auto animate-on-scroll delay-300">
+        <a href="contact.html" class="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3.5 bg-gse-gold text-gse-charcoal text-sm font-bold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
           Apply Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
-        <a href="principal.html" class="px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
+        <a href="principal.html" class="w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3.5 border-2 border-white/30 text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
           Principal's Message
         </a>
       </div>
@@ -320,9 +320,9 @@
         { label: data.school.address.area, icon: 'target' },
       ];
       floatingStats.innerHTML = stats.map(s => `
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 text-center hover:bg-white/25 transition-all duration-300">
-          <i data-lucide="${s.icon}" class="w-5 h-5 sm:w-6 sm:h-6 text-gse-gold mx-auto mb-2"></i>
-          <p class="text-white text-xs sm:text-sm font-medium leading-snug">${s.label}</p>
+        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 flex flex-row md:flex-col items-center justify-start md:justify-center gap-2.5 md:gap-2 hover:bg-white/25 transition-all duration-300 h-full">
+          <i data-lucide="${s.icon}" class="w-4 h-4 sm:w-6 sm:h-6 text-gse-gold shrink-0"></i>
+          <p class="text-white text-[10px] sm:text-sm font-medium leading-snug text-left md:text-center">${s.label}</p>
         </div>
       `).join('');
 
