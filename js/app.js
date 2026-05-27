@@ -35,8 +35,8 @@ function renderNavigation(activePage, data) {
 
   const homeActive = activePage === 'home' ? 'text-gse-gold font-semibold' : 'text-white';
   const academicsActive = activePage === 'academics' ? 'text-gse-gold font-semibold' : 'text-white';
-  const activitiesActive = activePage === 'activities' ? 'text-gse-gold font-semibold' : 'text-white';
-  const hostelActive = activePage === 'hostel' ? 'text-gse-gold font-semibold' : 'text-white';
+  const facilitiesActive = (activePage === 'activities' || activePage === 'hostel') ? 'text-gse-gold font-semibold' : 'text-white';
+  const achievementsActive = activePage === 'achievements' ? 'text-gse-gold font-semibold' : 'text-white';
   const teachersActive = activePage === 'teachers' ? 'text-gse-gold font-semibold' : 'text-white';
   const aboutActive = (activePage === 'about' || activePage === 'principal') ? 'text-gse-gold font-semibold' : 'text-white';
 
@@ -60,11 +60,21 @@ function renderNavigation(activePage, data) {
     <a href="index.html#academics" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${academicsActive}">
       Academics
     </a>
-    <a href="activities.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${activitiesActive}">
-      Activities
-    </a>
-    <a href="hostel.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${hostelActive}">
-      Hostel
+    <div class="relative group inline-block">
+      <button class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 inline-flex items-center gap-1 ${facilitiesActive}">
+        Facilities <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"></i>
+      </button>
+      <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 py-1 border border-gse-border">
+        <a href="activities.html" class="block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors">
+          Sports & Activities
+        </a>
+        <a href="hostel.html" class="block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors">
+          Hostel & Mess
+        </a>
+      </div>
+    </div>
+    <a href="achievements.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${achievementsActive}">
+      Achievements
     </a>
     <a href="teachers.html" class="nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${teachersActive}">
       Teachers
@@ -87,11 +97,17 @@ function renderNavigation(activePage, data) {
     <a href="index.html#academics" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
       Academics
     </a>
-    <a href="activities.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
-      Activities
-    </a>
-    <a href="hostel.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
-      Hostel
+    <div class="px-4 py-2 bg-gse-offwhite rounded-md border border-gse-border/50 my-1">
+      <span class="block text-xs font-semibold uppercase tracking-wider text-gse-gray/60 mb-1">Facilities</span>
+      <a href="activities.html" class="block pl-3 py-2 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+        Sports & Activities
+      </a>
+      <a href="hostel.html" class="block pl-3 py-2 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+        Hostel & Mess
+      </a>
+    </div>
+    <a href="achievements.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
+      Achievements
     </a>
     <a href="teachers.html" class="block px-4 py-3 text-sm font-medium rounded-md text-gse-charcoal hover:bg-gse-cream transition-colors">
       Teachers
@@ -220,7 +236,19 @@ function renderFooter(data) {
 
   let linksHtml = '';
   quickLinks.forEach(link => {
-    let relativeHref = link.href === '/' ? 'index.html' : (link.href.startsWith('/#') ? 'index.html' + link.href.substring(1) : link.href.substring(1) + '.html');
+    let relativeHref = link.href;
+    if (relativeHref === '/') {
+      relativeHref = 'index.html';
+    } else if (relativeHref.startsWith('/#')) {
+      relativeHref = 'index.html' + relativeHref.substring(1);
+    } else if (relativeHref.startsWith('/')) {
+      if (relativeHref.includes('#')) {
+        const parts = relativeHref.substring(1).split('#');
+        relativeHref = parts[0] + '.html#' + parts[1];
+      } else {
+        relativeHref = relativeHref.substring(1) + '.html';
+      }
+    }
     linksHtml += `
       <li>
         <a href="${relativeHref}" class="text-gray-400 hover:text-gse-gold text-sm transition-colors duration-200">

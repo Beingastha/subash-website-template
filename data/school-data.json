@@ -493,35 +493,15 @@
   ],
   "quickLinks": [
     {
-      "label": "Home",
-      "href": "/"
-    },
-    {
-      "label": "About Us",
-      "href": "/#about"
-    },
-    {
-      "label": "Academics",
-      "href": "/#academics"
-    },
-    {
-      "label": "Activities",
-      "href": "/activities"
-    },
-    {
-      "label": "Hostel",
-      "href": "/hostel"
-    },
-    {
-      "label": "Teachers",
-      "href": "/teachers"
-    },
-    {
-      "label": "Notices",
+      "label": "Latest Notices & Circulars",
       "href": "/notices"
     },
     {
-      "label": "Contact Us",
+      "label": "Hostel Rules & Regulations",
+      "href": "/hostel#rules"
+    },
+    {
+      "label": "Admissions & Contact Enquiry",
       "href": "/contact"
     }
   ]
