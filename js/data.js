@@ -2,7 +2,7 @@ window.schoolData = {
   "school": {
     "fullName": "Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal",
     "shortName": "Govt. HSS Excellence, Subhash Nagar",
-    "hindiName": "राजकीय उच्च माध्यमिक विद्यालय उत्कृष्टता, सुभाष शिवाजी नगर, भोपाल",
+    "hindiName": "\u0930\u093e\u091c\u0915\u0940\u092f \u0909\u091a\u094d\u091a \u092e\u093e\u0927\u094d\u092f\u092e\u093f\u0915 \u0935\u093f\u0926\u094d\u092f\u093e\u0932\u092f \u0909\u0924\u094d\u0915\u0943\u0937\u094d\u091f\u0924\u093e, \u0938\u0941\u092d\u093e\u0937 \u0936\u093f\u0935\u093e\u091c\u0940 \u0928\u0917\u0930, \u092d\u094b\u092a\u093e\u0932",
     "establishedYear": 2002,
     "type": "Government School of Excellence",
     "department": "Department of School Education, Government of Madhya Pradesh",
@@ -100,24 +100,104 @@ window.schoolData = {
     }
   },
   "principal": {
-    "name": "Shri R.K. Sharma",
+    "name": "Shri Sudhakar Parashar",
     "qualification": "M.Ed., M.Phil.",
     "experience": "25+ years in education",
-    "message": "Dear Students, Parents, and Well-wishers,\n\nIt is with great pride and a deep sense of responsibility that I welcome you to Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal. As a School of Excellence under the Department of School Education, Government of Madhya Pradesh, we carry a special mandate — to provide world-class education that empowers every student regardless of their socio-economic background.\n\nOur school stands as a beacon of hope and opportunity in the heart of Bhopal. With dedicated faculty, modern infrastructure including smart classrooms, well-equipped science laboratories, a computer lab with ATAL Tinkering Lab, and outstanding sports facilities, we strive to create an environment where every child can discover and develop their full potential. Our badminton courts, boxing ring, and cricket ground have produced champions at district and state levels.\n\nEducation, to us, is not merely about academic achievement. It is about building character, fostering scientific temper, nurturing creativity, and instilling values that make responsible citizens. Through NCC, NSS, sports, and cultural activities, we ensure holistic development of our students.\n\nI invite you to explore our website and learn more about the opportunities that await you at Govt. HSS Excellence. Together, let us build a brighter future for our children and our nation.\n\nJai Hind!",
+    "message": "Dear Students, Parents, and Well-wishers,\n\nIt is with great pride and a deep sense of responsibility that I welcome you to Govt. Higher Secondary School for Excellence, Subhash Shivaji Nagar, Bhopal. As a School of Excellence under the Department of School Education, Government of Madhya Pradesh, we carry a special mandate \u2014 to provide world-class education that empowers every student regardless of their socio-economic background.\n\nOur school stands as a beacon of hope and opportunity in the heart of Bhopal. With dedicated faculty, modern infrastructure including smart classrooms, well-equipped science laboratories, a computer lab with ATAL Tinkering Lab, and outstanding sports facilities, we strive to create an environment where every child can discover and develop their full potential. Our badminton courts, boxing ring, and cricket ground have produced champions at district and state levels.\n\nEducation, to us, is not merely about academic achievement. It is about building character, fostering scientific temper, nurturing creativity, and instilling values that make responsible citizens. Through NCC, NSS, sports, and cultural activities, we ensure holistic development of our students.\n\nI invite you to explore our website and learn more about the opportunities that await you at Govt. HSS Excellence. Together, let us build a brighter future for our children and our nation.\n\nJai Hind!",
     "vision": "To be a leading center of educational excellence that transforms lives through quality education, innovation, and inclusive growth, making every student a responsible, confident, and skilled citizen of India.",
     "mission": "To provide accessible, high-quality education that fosters critical thinking, scientific temper, and holistic development. We are committed to nurturing talent, building character, and empowering students from all sections of society to achieve their highest potential."
   },
   "teachers": [
-    { "id": 1, "name": "Shri R.K. Sharma", "designation": "Principal", "qualification": "M.Ed., M.Phil.", "subject": "Administration", "experience": "25+ years", "specialRole": "Head of Institution" },
-    { "id": 2, "name": "Smt. Savita Tiwari", "designation": "Vice Principal", "qualification": "M.A., B.Ed.", "subject": "Hindi", "experience": "22 years", "specialRole": "Academic Coordination" },
-    { "id": 3, "name": "Shri M.S. Chouhan", "designation": "HOD Science", "qualification": "M.Sc., B.Ed.", "subject": "Physics", "experience": "20 years", "specialRole": "Science Lab In-charge" },
-    { "id": 4, "name": "Smt. Preeti Jain", "designation": "HOD Mathematics", "qualification": "M.Sc. (Maths), B.Ed.", "subject": "Mathematics", "experience": "18 years", "specialRole": "Math Lab Coordinator" },
-    { "id": 5, "name": "Shri K.L. Verma", "designation": "HOD Hindi", "qualification": "M.A. (Hindi), B.Ed.", "subject": "Hindi", "experience": "19 years", "specialRole": "Cultural Committee Head" },
-    { "id": 6, "name": "Smt. Anjali Sharma", "designation": "HOD English", "qualification": "M.A. (English), B.Ed.", "subject": "English", "experience": "16 years", "specialRole": "Spoken English Program" },
-    { "id": 7, "name": "Shri R.P. Singh", "designation": "HOD Social Science", "qualification": "M.A. (History), B.Ed.", "subject": "History", "experience": "17 years", "specialRole": "NCC Officer" },
-    { "id": 8, "name": "Shri Dinesh Kumar", "designation": "HOD Physical Education", "qualification": "M.P.Ed.", "subject": "Physical Education", "experience": "15 years", "specialRole": "Sports Coordinator & Boxing Coach" },
-    { "id": 9, "name": "Smt. Neha Patidar", "designation": "HOD Computer Science", "qualification": "M.C.A., B.Ed.", "subject": "Computer Science", "experience": "10 years", "specialRole": "ATAL Tinkering Lab In-charge" },
-    { "id": 10, "name": "Shri S.K. Dubey", "designation": "Librarian", "qualification": "B.Lib., M.Lib.", "subject": "Library Science", "experience": "14 years", "specialRole": "Library & Digital Resources" }
+    {
+      "id": 1,
+      "name": "Shri Sudhakar Parashar",
+      "designation": "Principal",
+      "qualification": "M.Ed., M.Phil.",
+      "subject": "Administration",
+      "experience": "25+ years",
+      "specialRole": "Head of Institution"
+    },
+    {
+      "id": 2,
+      "name": "Smt. Savita Tiwari",
+      "designation": "Vice Principal",
+      "qualification": "M.A., B.Ed.",
+      "subject": "Hindi",
+      "experience": "22 years",
+      "specialRole": "Academic Coordination"
+    },
+    {
+      "id": 3,
+      "name": "Shri M.S. Chouhan",
+      "designation": "HOD Science",
+      "qualification": "M.Sc., B.Ed.",
+      "subject": "Physics",
+      "experience": "20 years",
+      "specialRole": "Science Lab In-charge"
+    },
+    {
+      "id": 4,
+      "name": "Smt. Preeti Jain",
+      "designation": "HOD Mathematics",
+      "qualification": "M.Sc. (Maths), B.Ed.",
+      "subject": "Mathematics",
+      "experience": "18 years",
+      "specialRole": "Math Lab Coordinator"
+    },
+    {
+      "id": 5,
+      "name": "Shri K.L. Verma",
+      "designation": "HOD Hindi",
+      "qualification": "M.A. (Hindi), B.Ed.",
+      "subject": "Hindi",
+      "experience": "19 years",
+      "specialRole": "Cultural Committee Head"
+    },
+    {
+      "id": 6,
+      "name": "Smt. Anjali Sharma",
+      "designation": "HOD English",
+      "qualification": "M.A. (English), B.Ed.",
+      "subject": "English",
+      "experience": "16 years",
+      "specialRole": "Spoken English Program"
+    },
+    {
+      "id": 7,
+      "name": "Shri R.P. Singh",
+      "designation": "HOD Social Science",
+      "qualification": "M.A. (History), B.Ed.",
+      "subject": "History",
+      "experience": "17 years",
+      "specialRole": "NCC Officer"
+    },
+    {
+      "id": 8,
+      "name": "Shri Dinesh Kumar",
+      "designation": "HOD Physical Education",
+      "qualification": "M.P.Ed.",
+      "subject": "Physical Education",
+      "experience": "15 years",
+      "specialRole": "Sports Coordinator & Boxing Coach"
+    },
+    {
+      "id": 9,
+      "name": "Smt. Neha Patidar",
+      "designation": "HOD Computer Science",
+      "qualification": "M.C.A., B.Ed.",
+      "subject": "Computer Science",
+      "experience": "10 years",
+      "specialRole": "ATAL Tinkering Lab In-charge"
+    },
+    {
+      "id": 10,
+      "name": "Shri S.K. Dubey",
+      "designation": "Librarian",
+      "qualification": "B.Lib., M.Lib.",
+      "subject": "Library Science",
+      "experience": "14 years",
+      "specialRole": "Library & Digital Resources"
+    }
   ],
   "activities": {
     "featured": [
@@ -145,7 +225,7 @@ window.schoolData = {
         "id": "cricket",
         "title": "Cricket",
         "image": "/images/cricket.png",
-        "description": "Cricket is more than just a sport at our school — it is a passion that unites our student community. Our cricket ground with practice nets provides the perfect setting for budding cricketers to hone their skills. From batting technique to bowling strategies and fielding drills, our coaching program covers all aspects of the game. Regular inter-school matches and tournaments keep the competitive spirit alive.",
+        "description": "Cricket is more than just a sport at our school \u2014 it is a passion that unites our student community. Our cricket ground with practice nets provides the perfect setting for budding cricketers to hone their skills. From batting technique to bowling strategies and fielding drills, our coaching program covers all aspects of the game. Regular inter-school matches and tournaments keep the competitive spirit alive.",
         "facilities": "Full-size cricket ground, practice nets, pitch maintenance, and sports equipment",
         "coaching": "Experienced cricket coach with district-level playing background",
         "achievements": "Inter-school tournament winners (2023), District-level semifinalists, Several students selected for district camps",
@@ -153,12 +233,42 @@ window.schoolData = {
       }
     ],
     "other": [
-      { "id": "kabaddi", "title": "Kabaddi", "icon": "Swords", "description": "Our kabaddi team trains rigorously and has represented the school at various inter-school and district-level competitions." },
-      { "id": "athletics", "title": "Athletics", "icon": "Zap", "description": "Track and field events including sprints, long jump, high jump, and shot put with dedicated coaching and practice sessions." },
-      { "id": "volleyball", "title": "Volleyball", "icon": "CircleDot", "description": "Volleyball court with regular practice sessions and participation in inter-school tournaments." },
-      { "id": "yoga", "title": "Yoga", "icon": "Heart", "description": "Daily yoga sessions for physical fitness, mental wellness, and concentration improvement." },
-      { "id": "ncc", "title": "NCC", "icon": "Shield", "description": "National Cadet Corps training instills discipline, patriotism, and leadership qualities in students." },
-      { "id": "nss", "title": "NSS", "icon": "Users", "description": "National Service Scheme activities promote community service, social responsibility, and civic engagement." }
+      {
+        "id": "kabaddi",
+        "title": "Kabaddi",
+        "icon": "Swords",
+        "description": "Our kabaddi team trains rigorously and has represented the school at various inter-school and district-level competitions."
+      },
+      {
+        "id": "athletics",
+        "title": "Athletics",
+        "icon": "Zap",
+        "description": "Track and field events including sprints, long jump, high jump, and shot put with dedicated coaching and practice sessions."
+      },
+      {
+        "id": "volleyball",
+        "title": "Volleyball",
+        "icon": "CircleDot",
+        "description": "Volleyball court with regular practice sessions and participation in inter-school tournaments."
+      },
+      {
+        "id": "yoga",
+        "title": "Yoga",
+        "icon": "Heart",
+        "description": "Daily yoga sessions for physical fitness, mental wellness, and concentration improvement."
+      },
+      {
+        "id": "ncc",
+        "title": "NCC",
+        "icon": "Shield",
+        "description": "National Cadet Corps training instills discipline, patriotism, and leadership qualities in students."
+      },
+      {
+        "id": "nss",
+        "title": "NSS",
+        "icon": "Users",
+        "description": "National Service Scheme activities promote community service, social responsibility, and civic engagement."
+      }
     ],
     "achievements": [
       "State-level boxing gold medalists (2022, 2023)",
@@ -175,50 +285,136 @@ window.schoolData = {
     "capacity": 100,
     "overview": "The hostel at Govt. HSS Excellence provides a safe, disciplined, and conducive environment for boys coming from distant areas to pursue quality education. Managed by experienced wardens, the hostel ensures that students receive proper nutrition, study time, and recreational opportunities. The hostel is an integral part of our commitment to making quality education accessible to students from all corners of Madhya Pradesh.",
     "features": [
-      { "title": "Rooms", "icon": "Bed", "description": "Well-ventilated rooms with comfortable bedding, storage facilities, and proper lighting. Each room accommodates students in a clean and organized manner." },
-      { "title": "Mess", "icon": "UtensilsCrossed", "description": "Nutritious and balanced meals served three times a day. The menu includes vegetarian options, planned to meet the dietary needs of growing students." },
-      { "title": "Study Hall", "icon": "BookOpen", "description": "Dedicated study hall with proper lighting and silence maintained during study hours. Teachers are available for doubt-clearing sessions during evening study time." },
-      { "title": "Recreation", "icon": "Gamepad2", "description": "Indoor games including carrom, chess, and table tennis. Television with educational channels available during designated leisure hours." },
-      { "title": "Security", "icon": "ShieldCheck", "description": "24/7 security with CCTV surveillance. Entry and exit monitored strictly. Visitors allowed only during designated hours with proper identification." },
-      { "title": "Medical", "icon": "HeartPulse", "description": "First-aid facilities available on campus. Regular health check-ups conducted. Tie-up with nearby hospital for emergency medical care." }
+      {
+        "title": "Rooms",
+        "icon": "Bed",
+        "description": "Well-ventilated rooms with comfortable bedding, storage facilities, and proper lighting. Each room accommodates students in a clean and organized manner."
+      },
+      {
+        "title": "Mess",
+        "icon": "UtensilsCrossed",
+        "description": "Nutritious and balanced meals served three times a day. The menu includes vegetarian options, planned to meet the dietary needs of growing students."
+      },
+      {
+        "title": "Study Hall",
+        "icon": "BookOpen",
+        "description": "Dedicated study hall with proper lighting and silence maintained during study hours. Teachers are available for doubt-clearing sessions during evening study time."
+      },
+      {
+        "title": "Recreation",
+        "icon": "Gamepad2",
+        "description": "Indoor games including carrom, chess, and table tennis. Television with educational channels available during designated leisure hours."
+      },
+      {
+        "title": "Security",
+        "icon": "ShieldCheck",
+        "description": "24/7 security with CCTV surveillance. Entry and exit monitored strictly. Visitors allowed only during designated hours with proper identification."
+      },
+      {
+        "title": "Medical",
+        "icon": "HeartPulse",
+        "description": "First-aid facilities available on campus. Regular health check-ups conducted. Tie-up with nearby hospital for emergency medical care."
+      }
     ],
     "rules": [
       "Students must maintain discipline and follow the daily schedule strictly",
-      "Study hours are mandatory — 6:00 AM to 8:00 AM and 6:00 PM to 9:00 PM",
-      "Mess timings must be followed — Breakfast: 7:30 AM, Lunch: 12:30 PM, Dinner: 8:00 PM",
+      "Study hours are mandatory \u2014 6:00 AM to 8:00 AM and 6:00 PM to 9:00 PM",
+      "Mess timings must be followed \u2014 Breakfast: 7:30 AM, Lunch: 12:30 PM, Dinner: 8:00 PM",
       "No student is allowed to leave the hostel premises without prior permission from the warden",
       "Use of mobile phones is restricted to designated hours only",
-      "Room cleanliness is the responsibility of all occupants — daily inspection at 8:30 AM",
+      "Room cleanliness is the responsibility of all occupants \u2014 daily inspection at 8:30 AM",
       "Any damage to hostel property will be charged to the student",
       "Visitors are allowed only on Sundays between 10:00 AM and 4:00 PM",
       "Students must return to the hostel by 6:00 PM after school hours",
       "Ragging in any form is strictly prohibited and will result in immediate expulsion"
     ],
     "wardens": [
-      { "name": "Shri A.K. Mishra", "designation": "Chief Warden", "qualification": "M.A., B.Ed.", "phone": "+91 755-255-2490", "experience": "15 years as warden" },
-      { "name": "Shri V.K. Pandey", "designation": "Assistant Warden", "qualification": "M.Sc., B.Ed.", "phone": "+91 755-255-2490", "experience": "8 years as warden" }
+      {
+        "name": "Shri A.K. Mishra",
+        "designation": "Chief Warden",
+        "qualification": "M.A., B.Ed.",
+        "phone": "+91 755-255-2490",
+        "experience": "15 years as warden"
+      },
+      {
+        "name": "Shri V.K. Pandey",
+        "designation": "Assistant Warden",
+        "qualification": "M.Sc., B.Ed.",
+        "phone": "+91 755-255-2490",
+        "experience": "8 years as warden"
+      }
     ]
   },
   "academics": {
-    "streams": ["Science", "Mathematics", "Humanities"],
+    "streams": [
+      "Science",
+      "Mathematics",
+      "Humanities"
+    ],
     "curriculum": "MP Board of Secondary Education",
     "description": "Our academic programs are designed to foster critical thinking, scientific temper, and a love for learning across multiple disciplines. As a School of Excellence, we offer specialized coaching for competitive examinations alongside the regular MP Board curriculum.",
     "facilities": [
-      { "title": "Science Labs", "image": "/images/academics-lab.png", "icon": "FlaskConical", "description": "State-of-the-art laboratories for Physics, Chemistry, and Biology. Equipped with modern apparatus, chemicals, and specimens for hands-on experimental learning. Regular practical sessions ensure students develop strong scientific skills and understanding of theoretical concepts through experimentation." },
-      { "title": "Computer Lab & ATL", "image": "/images/computer-lab.png", "icon": "Monitor", "description": "Well-equipped computer lab with 25 modern systems and internet connectivity. Our ATAL Tinkering Lab (ATL), sanctioned by NITI Aayog, provides students with tools and equipment for innovation and hands-on STEM learning. Students learn programming, digital literacy, robotics, and emerging technologies essential for the 21st century." },
-      { "title": "Library", "image": "/images/library.png", "icon": "BookOpen", "description": "Extensive library with over 5,000 books, periodicals, newspapers, and digital resources. A quiet haven for study, research, and intellectual growth that inspires a lifelong reading habit. The library also provides access to e-books and online educational resources for competitive exam preparation." }
+      {
+        "title": "Science Labs",
+        "image": "/images/academics-lab.png",
+        "icon": "FlaskConical",
+        "description": "State-of-the-art laboratories for Physics, Chemistry, and Biology. Equipped with modern apparatus, chemicals, and specimens for hands-on experimental learning. Regular practical sessions ensure students develop strong scientific skills and understanding of theoretical concepts through experimentation."
+      },
+      {
+        "title": "Computer Lab & ATL",
+        "image": "/images/computer-lab.png",
+        "icon": "Monitor",
+        "description": "Well-equipped computer lab with 25 modern systems and internet connectivity. Our ATAL Tinkering Lab (ATL), sanctioned by NITI Aayog, provides students with tools and equipment for innovation and hands-on STEM learning. Students learn programming, digital literacy, robotics, and emerging technologies essential for the 21st century."
+      },
+      {
+        "title": "Library",
+        "image": "/images/library.png",
+        "icon": "BookOpen",
+        "description": "Extensive library with over 5,000 books, periodicals, newspapers, and digital resources. A quiet haven for study, research, and intellectual growth that inspires a lifelong reading habit. The library also provides access to e-books and online educational resources for competitive exam preparation."
+      }
     ]
   },
   "statistics": [
-    { "value": 22, "suffix": "+", "label": "Years of Service" },
-    { "value": 1200, "suffix": "+", "label": "Students Enrolled" },
-    { "value": 45, "suffix": "+", "label": "Expert Faculty" },
-    { "value": 92, "suffix": "%", "label": "Board Pass Rate" }
+    {
+      "value": 22,
+      "suffix": "+",
+      "label": "Years of Service"
+    },
+    {
+      "value": 1200,
+      "suffix": "+",
+      "label": "Students Enrolled"
+    },
+    {
+      "value": 45,
+      "suffix": "+",
+      "label": "Expert Faculty"
+    },
+    {
+      "value": 92,
+      "suffix": "%",
+      "label": "Board Pass Rate"
+    }
   ],
   "testimonials": [
-    { "name": "Ananya Sharma", "role": "Student, Class XII Science", "quote": "The science labs and dedicated teachers here have given me the confidence to pursue engineering. The ATAL Tinkering Lab opened up a whole new world of innovation for me. The school has truly lived up to its name — Excellence!", "stars": 5 },
-    { "name": "Rajesh Kumar Verma", "role": "Parent", "quote": "As a government school, the quality of education and facilities here is remarkable. The hostel facility ensures my son gets a safe and disciplined environment for studies. The sports facilities, especially boxing, have transformed his confidence.", "stars": 5 },
-    { "name": "Priya Patel", "role": "Alumni, Batch 2022", "quote": "The boxing training and sports facilities transformed my life. I represented the school at state level and the discipline I learned here guides me in everything I do. The teachers went above and beyond to help us succeed.", "stars": 5 }
+    {
+      "name": "Ananya Sharma",
+      "role": "Student, Class XII Science",
+      "quote": "The science labs and dedicated teachers here have given me the confidence to pursue engineering. The ATAL Tinkering Lab opened up a whole new world of innovation for me. The school has truly lived up to its name \u2014 Excellence!",
+      "stars": 5
+    },
+    {
+      "name": "Rajesh Kumar Verma",
+      "role": "Parent",
+      "quote": "As a government school, the quality of education and facilities here is remarkable. The hostel facility ensures my son gets a safe and disciplined environment for studies. The sports facilities, especially boxing, have transformed his confidence.",
+      "stars": 5
+    },
+    {
+      "name": "Priya Patel",
+      "role": "Alumni, Batch 2022",
+      "quote": "The boxing training and sports facilities transformed my life. I represented the school at state level and the discipline I learned here guides me in everything I do. The teachers went above and beyond to help us succeed.",
+      "stars": 5
+    }
   ],
   "images": {
     "hero": "/images/hero-campus.png",
@@ -232,7 +428,8 @@ window.schoolData = {
     "scienceLab": "/images/academics-lab.png",
     "computerLab": "/images/computer-lab.png",
     "library": "/images/library.png",
-    "logo": "/images/logo.png"
+    "logo": "/images/logo.png",
+    "schoolEntrance": "/images/school-entrance.png"
   },
   "notices": [
     {
@@ -265,22 +462,67 @@ window.schoolData = {
     }
   ],
   "navLinks": [
-    { "name": "Home", "href": "/" },
-    { "name": "About", "href": "/#about" },
-    { "name": "Academics", "href": "/#academics" },
-    { "name": "Activities", "href": "/activities" },
-    { "name": "Hostel", "href": "/hostel" },
-    { "name": "Teachers", "href": "/teachers" },
-    { "name": "Contact", "href": "/contact" }
+    {
+      "name": "Home",
+      "href": "/"
+    },
+    {
+      "name": "About",
+      "href": "/#about"
+    },
+    {
+      "name": "Academics",
+      "href": "/#academics"
+    },
+    {
+      "name": "Activities",
+      "href": "/activities"
+    },
+    {
+      "name": "Hostel",
+      "href": "/hostel"
+    },
+    {
+      "name": "Teachers",
+      "href": "/teachers"
+    },
+    {
+      "name": "Contact",
+      "href": "/contact"
+    }
   ],
   "quickLinks": [
-    { "label": "Home", "href": "/" },
-    { "label": "About Us", "href": "/#about" },
-    { "label": "Academics", "href": "/#academics" },
-    { "label": "Activities", "href": "/activities" },
-    { "label": "Hostel", "href": "/hostel" },
-    { "label": "Teachers", "href": "/teachers" },
-    { "label": "Notices", "href": "/notices" },
-    { "label": "Contact Us", "href": "/contact" }
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "About Us",
+      "href": "/#about"
+    },
+    {
+      "label": "Academics",
+      "href": "/#academics"
+    },
+    {
+      "label": "Activities",
+      "href": "/activities"
+    },
+    {
+      "label": "Hostel",
+      "href": "/hostel"
+    },
+    {
+      "label": "Teachers",
+      "href": "/teachers"
+    },
+    {
+      "label": "Notices",
+      "href": "/notices"
+    },
+    {
+      "label": "Contact Us",
+      "href": "/contact"
+    }
   ]
 };

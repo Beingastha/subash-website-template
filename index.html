@@ -39,23 +39,23 @@
   <header id="main-header"></header>
 
   <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <section class="relative min-h-screen py-20 md:py-28 flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
       <img id="hero-img" src="" alt="Campus Hero Image" class="object-cover w-full h-full" />
-      <div class="absolute inset-0 bg-gradient-to-b from-gse-green/80 via-gse-green-dark/70 to-gse-green-dark/90"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-gse-charcoal/85 via-gse-green-dark/70 to-gse-charcoal/95"></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 md:pt-20">
       <div class="inline-block mb-4 px-4 py-1.5 bg-gse-gold/20 border border-gse-gold/40 rounded-full animate-on-scroll">
         <span id="hero-dept" class="text-gse-gold text-sm font-medium"></span>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-on-scroll delay-100">
+      <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight animate-on-scroll delay-100">
         School for <span class="text-gse-gold">Excellence</span>,<br />
         <span id="hero-city"></span>
       </h1>
 
-      <p id="hero-subtitle" class="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed animate-on-scroll delay-200"></p>
+      <p id="hero-subtitle" class="text-sm sm:text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed animate-on-scroll delay-200"></p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll delay-300">
         <a href="contact.html" class="px-8 py-3.5 bg-gse-gold text-gse-charcoal font-semibold rounded-lg hover:bg-gse-gold-light transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
@@ -67,7 +67,7 @@
       </div>
 
       <!-- Floating Stats -->
-      <div id="floating-stats" class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto animate-on-scroll delay-500">
+      <div id="floating-stats" class="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto animate-on-scroll delay-500">
         <!-- Rendered by JS -->
       </div>
     </div>
@@ -151,6 +151,47 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- From the Principal's Desk Section -->
+    <section class="py-16 md:py-20 bg-gse-offwhite border-t border-b border-gse-border/30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+          
+          <!-- Column 1: Principal's Portrait Photo -->
+          <div class="lg:col-span-1 animate-on-scroll-left">
+            <div class="relative max-w-xs mx-auto">
+              <!-- Decorative background gold box -->
+              <div class="absolute inset-0 bg-gse-gold rounded-2xl transform translate-x-3 translate-y-3 sm:translate-x-4 sm:translate-y-4 -z-10 shadow-lg"></div>
+              <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-gse-cream h-[340px] md:h-[380px] w-full">
+                <img id="principal-about-img" src="" alt="Principal Sudhakar Parashar" class="object-cover w-full h-full object-top" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2 & 3: Excerpt & Details -->
+          <div class="lg:col-span-2 animate-on-scroll-right">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gse-charcoal mb-2">From the Principal's Desk</h2>
+            <div class="h-1 w-16 bg-gse-gold mb-6 rounded-full"></div>
+            
+            <span class="quote-mark text-5xl text-gse-gold font-serif leading-none block -mb-2">&ldquo;</span>
+            <p id="principal-excerpt" class="text-gse-gray text-base md:text-lg italic leading-relaxed mb-6 pl-4 border-l-2 border-gse-gold/40">
+              <!-- Rendered by JS -->
+            </p>
+            
+            <div class="mb-6">
+              <h3 id="principal-display-name" class="text-xl font-bold text-gse-charcoal"></h3>
+              <p class="text-gse-green font-semibold text-sm">Principal, Govt. HSS Excellence</p>
+              <p class="text-gse-gray text-xs mt-1">National Teacher Awardee</p>
+            </div>
+            
+            <a href="principal.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gse-green text-white font-semibold rounded-lg hover:bg-gse-green-light transition-all duration-300 shadow-md hover:shadow-lg">
+              Read Full Message <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
         </div>
       </div>
     </section>
@@ -279,14 +320,14 @@
         { label: data.school.address.area, icon: 'target' },
       ];
       floatingStats.innerHTML = stats.map(s => `
-        <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 text-center">
-          <i data-lucide="${s.icon}" class="w-6 h-6 text-gse-gold mx-auto mb-2"></i>
-          <p class="text-white text-sm font-medium">${s.label}</p>
+        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 text-center hover:bg-white/25 transition-all duration-300">
+          <i data-lucide="${s.icon}" class="w-5 h-5 sm:w-6 sm:h-6 text-gse-gold mx-auto mb-2"></i>
+          <p class="text-white text-xs sm:text-sm font-medium leading-snug">${s.label}</p>
         </div>
       `).join('');
 
       // About
-      document.getElementById('about-img').src = getImagePath(data.images.hero);
+      document.getElementById('about-img').src = getImagePath(data.images.schoolEntrance || data.images.hero);
       document.getElementById('about-est').textContent = `Since ${data.school.establishedYear}`;
       document.getElementById('about-type').textContent = data.school.type;
       document.getElementById('about-text-1').textContent = `${data.school.fullName} is a premier government institution under the ${data.school.department}. As a designated School for Excellence, we are committed to providing world-class education to students from all sections of society.`;
@@ -438,6 +479,16 @@
           }
           updateSlider();
         }, 6000);
+      }
+
+      // Principal Desk Section on Home Page
+      if (document.getElementById('principal-about-img')) {
+        document.getElementById('principal-about-img').src = getImagePath(data.images.principal);
+        document.getElementById('principal-display-name').textContent = data.principal.name;
+        // Take first two sentences of the message as excerpt
+        const fullMessage = data.principal.message;
+        const excerpt = fullMessage.split('. ').slice(0, 2).join('. ') + '.';
+        document.getElementById('principal-excerpt').textContent = excerpt;
       }
 
       lucide.createIcons();
