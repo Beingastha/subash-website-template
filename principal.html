@@ -59,7 +59,7 @@
           <div class="lg:col-span-1 animate-on-scroll-left">
             <div class="bg-white rounded-xl shadow-md p-6 border border-gse-border text-center">
               <div class="w-40 h-40 rounded-full bg-gse-green/10 border-4 border-gse-gold mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                <span id="principal-initials" class="text-4xl font-bold text-gse-green"></span>
+                <img id="principal-img" src="" alt="Principal Sudhakar Parashar" class="w-full h-full object-cover object-top" />
               </div>
               <h3 id="principal-name" class="text-xl font-bold text-gse-charcoal mb-1"></h3>
               <p id="principal-title" class="text-gse-green font-semibold text-sm mb-3">Principal</p>
@@ -130,9 +130,10 @@
       document.getElementById('principal-vision').textContent = p.vision;
       document.getElementById('principal-mission').textContent = p.mission;
 
-      // Initials
-      const initials = p.name.replace(/^(Shri|Smt|Dr|Prof)\.?\s*/i, '').split(' ').map(n => n[0]).join('');
-      document.getElementById('principal-initials').textContent = initials;
+      // Principal Image
+      if (document.getElementById('principal-img')) {
+        document.getElementById('principal-img').src = getImagePath(data.images.principal);
+      }
 
       // Message paragraphs
       const messageContent = document.getElementById('message-content');
