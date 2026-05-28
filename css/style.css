@@ -192,3 +192,162 @@
 .animate-pulse-gold {
   animation: pulseGold 2s ease-in-out infinite;
 }
+
+/* Color Scheme Variables */
+:root {
+  --color-primary: #006633;
+  --color-primary-light: #008844;
+  --color-primary-dark: #004D26;
+  --color-secondary: #D4AF37;
+  --color-secondary-light: #E5C754;
+  --color-secondary-dark: #B8962E;
+}
+
+/* Dark theme overrides */
+html.dark-theme body {
+  background-color: #0f172a !important; /* Slate 900 */
+  color: #f1f5f9 !important; /* Slate 100 */
+}
+
+html.dark-theme .bg-white {
+  background-color: #1e293b !important; /* Slate 800 */
+}
+
+html.dark-theme .bg-gse-offwhite {
+  background-color: #0f172a !important; /* Slate 900 */
+}
+
+html.dark-theme .bg-gse-cream {
+  background-color: #1e293b !important; /* Slate 800 */
+}
+
+html.dark-theme .text-gse-charcoal {
+  color: #f1f5f9 !important; /* Slate 100 */
+}
+
+html.dark-theme .text-gse-gray {
+  color: #94a3b8 !important; /* Slate 400 */
+}
+
+html.dark-theme .border-gse-border {
+  border-color: #334155 !important; /* Slate 700 */
+}
+
+html.dark-theme .border-gse-border\/50 {
+  border-color: rgba(51, 65, 85, 0.5) !important;
+}
+
+/* Navigation Solid Header in Dark Theme */
+html.dark-theme .nav-solid {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .nav-solid .nav-link {
+  color: #f1f5f9 !important;
+}
+
+html.dark-theme .nav-solid .nav-link:hover {
+  color: var(--color-secondary, #D4AF37) !important;
+}
+
+html.dark-theme .nav-solid .header-title {
+  color: #ffffff !important;
+}
+
+html.dark-theme .nav-solid .header-subtitle {
+  color: #94a3b8 !important;
+}
+
+/* Mobile Menu in Dark Theme */
+html.dark-theme #mobile-menu {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme #mobile-menu a {
+  color: #f1f5f9 !important;
+}
+
+html.dark-theme #mobile-menu a:hover {
+  background-color: #334155 !important;
+}
+
+html.dark-theme #mobile-menu .bg-gse-offwhite {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+/* Form Controls in Dark Theme */
+html.dark-theme input,
+html.dark-theme textarea,
+html.dark-theme select {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme input:focus,
+html.dark-theme textarea:focus,
+html.dark-theme select:focus {
+  border-color: var(--color-primary, #006633) !important;
+  box-shadow: 0 0 0 2px rgba(0, 102, 51, 0.2) !important;
+}
+
+/* Green overlay/highlights inside Dark Theme */
+html.dark-theme .bg-gse-green\/10 {
+  background-color: rgba(0, 102, 51, 0.25) !important;
+}
+
+html.dark-theme .text-gse-green {
+  color: var(--color-primary-light, #008844) !important;
+}
+
+/* Custom Scrollbars in Dark Theme */
+html.dark-theme ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+html.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--color-primary, #006633);
+}
+
+html.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark, #004D26);
+}
+
+/* Card hover shadow adjustments in dark theme */
+html.dark-theme .card-hover-lift:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Hide Google Translate top bar/widgets */
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.goog-te-banner {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-tooltip,
+.goog-tooltip:hover,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Style for language dropdown active items */
+.lang-active {
+  font-weight: 600;
+  color: var(--color-secondary, #D4AF37) !important;
+}
+

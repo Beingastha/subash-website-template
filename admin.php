@@ -472,6 +472,22 @@ if ($is_logged_in) {
                     }
                 }
             }
+
+            // ACTION 13: THEME COLOR SCHEME (Master Only)
+            elseif ($is_master && isset($_POST['action']) && $_POST['action'] === 'update_theme') {
+                $json_data['themeColors']['primary'] = trim($_POST['primary_color'] ?? '#006633');
+                $json_data['themeColors']['primaryLight'] = trim($_POST['primary_light'] ?? '#008844');
+                $json_data['themeColors']['primaryDark'] = trim($_POST['primary_dark'] ?? '#004D26');
+                $json_data['themeColors']['secondary'] = trim($_POST['secondary_color'] ?? '#D4AF37');
+                $json_data['themeColors']['secondaryLight'] = trim($_POST['secondary_light'] ?? '#E5C754');
+                $json_data['themeColors']['secondaryDark'] = trim($_POST['secondary_dark'] ?? '#B8962E');
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Theme color scheme updated successfully!";
+                } else {
+                    $error_msg = "Failed to update theme colors.";
+                }
+            }
             
         } catch (Exception $e) {
             $error_msg = "Upload Error: " . $e->getMessage();
@@ -491,6 +507,14 @@ if ($is_logged_in) {
         $testimonials = $json_data['testimonials'] ?? [];
         $images = $json_data['images'] ?? [];
         $notices = $json_data['notices'] ?? [];
+        $themeColors = $json_data['themeColors'] ?? [
+            'primary' => '#006633',
+            'primaryLight' => '#008844',
+            'primaryDark' => '#004D26',
+            'secondary' => '#D4AF37',
+            'secondaryLight' => '#E5C754',
+            'secondaryDark' => '#B8962E'
+        ];
     } else {
         $error_msg = "Database file school-data.json not found.";
     }
@@ -509,10 +533,10 @@ if ($is_logged_in) {
   <style>
     :root {
       --color-charcoal: #232B2B;
-      --color-green: #0D5E3A;
-      --color-green-light: #168a57;
-      --color-gold: #D4AF37;
-      --color-gold-light: #f3cb52;
+      --color-green: <?php echo htmlspecialchars($themeColors['primary'] ?? '#0d5e3a'); ?>;
+      --color-green-light: <?php echo htmlspecialchars($themeColors['primaryLight'] ?? '#168a57'); ?>;
+      --color-gold: <?php echo htmlspecialchars($themeColors['secondary'] ?? '#D4AF37'); ?>;
+      --color-gold-light: <?php echo htmlspecialchars($themeColors['secondaryLight'] ?? '#f3cb52'); ?>;
       --color-bg-dark: #121616;
       --color-card-dark: #1a2020;
       --color-border-dark: #2c3636;
@@ -1305,6 +1329,10 @@ if ($is_logged_in) {
               <svg class="nav-tab-icon" viewBox="0 0 24 24" style="fill: var(--color-gold);"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
               Manage Access Keys
             </button>
+            <button class="nav-tab <?php echo ($default_tab === 'theme-tab') ? 'active' : ''; ?>" style="border-color: var(--color-green-light);" onclick="switchTab('theme-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24" style="fill: var(--color-green-light);"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9s1.5.67 1.5 1.5S7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+              Color & Theme
+            </button>
           <?php else: ?>
             <button class="nav-tab <?php echo ($default_tab === 'contact-tab') ? 'active' : ''; ?>" onclick="switchTab('contact-tab', this)">
               <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1.04-1-.04z"/></svg>
@@ -1944,6 +1972,90 @@ if ($is_logged_in) {
             </div>
           <?php endif; ?>
 
+          <?php if ($is_master): ?>
+            <!-- TAB 11: COLOR & THEME SETTINGS (Master Only) -->
+            <div id="theme-tab" class="tab-content <?php echo ($default_tab === 'theme-tab') ? 'active' : ''; ?>">
+              <h2 class="section-title">Color Scheme & Branding Settings</h2>
+              <p class="section-desc">Customize primary and secondary colors of the website layout or select from curated presets.</p>
+              
+              <!-- Color Presets -->
+              <div class="key-generator-box" style="margin-bottom: 2rem;">
+                <h3 class="generator-title">Select Preset Theme</h3>
+                <div class="form-grid" style="grid-template-cols: 1fr; margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="theme_preset">Preset Palette</label>
+                    <select id="theme_preset" class="form-input" onchange="applyColorPreset(this.value)">
+                      <option value="">-- Choose a Preset or Customize Below --</option>
+                      <option value="emerald_gold">Classic Emerald & Gold (Default)</option>
+                      <option value="sapphire_silver">Sapphire & Silver</option>
+                      <option value="crimson_gold">Crimson & Gold</option>
+                      <option value="teal_bronze">Teal & Bronze</option>
+                      <option value="purple_gold">Royal Purple & Gold</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Colors Editor Form -->
+              <form action="admin.php" method="POST">
+                <input type="hidden" name="action" value="update_theme" />
+                <input type="hidden" name="active_tab" value="theme-tab" />
+                
+                <h3 class="form-section-header">Primary Brand Colors</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="primary_color">Primary Color (Base)</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="primary_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($themeColors['primary'] ?? '#006633'); ?>" oninput="document.getElementById('primary_color').value = this.value" />
+                      <input type="text" id="primary_color" name="primary_color" class="form-input" value="<?php echo htmlspecialchars($themeColors['primary'] ?? '#006633'); ?>" required oninput="document.getElementById('primary_picker').value = this.value" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="primary_light">Primary Light Accent</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="primary_light_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($themeColors['primaryLight'] ?? '#008844'); ?>" oninput="document.getElementById('primary_light').value = this.value" />
+                      <input type="text" id="primary_light" name="primary_light" class="form-input" value="<?php echo htmlspecialchars($themeColors['primaryLight'] ?? '#008844'); ?>" required oninput="document.getElementById('primary_light_picker').value = this.value" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="primary_dark">Primary Dark Shade</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="primary_dark_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($themeColors['primaryDark'] ?? '#004D26'); ?>" oninput="document.getElementById('primary_dark').value = this.value" />
+                      <input type="text" id="primary_dark" name="primary_dark" class="form-input" value="<?php echo htmlspecialchars($themeColors['primaryDark'] ?? '#004D26'); ?>" required oninput="document.getElementById('primary_dark_picker').value = this.value" />
+                    </div>
+                  </div>
+                </div>
+
+                <h3 class="form-section-header">Secondary Accent Colors (Gold)</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="secondary_color">Secondary Color (Base)</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="secondary_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($themeColors['secondary'] ?? '#D4AF37'); ?>" oninput="document.getElementById('secondary_color').value = this.value" />
+                      <input type="text" id="secondary_color" name="secondary_color" class="form-input" value="<?php echo htmlspecialchars($themeColors['secondary'] ?? '#D4AF37'); ?>" required oninput="document.getElementById('secondary_picker').value = this.value" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="secondary_light">Secondary Light Accent</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="secondary_light_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($themeColors['secondaryLight'] ?? '#E5C754'); ?>" oninput="document.getElementById('secondary_light').value = this.value" />
+                      <input type="text" id="secondary_light" name="secondary_light" class="form-input" value="<?php echo htmlspecialchars($themeColors['secondaryLight'] ?? '#E5C754'); ?>" required oninput="document.getElementById('secondary_light_picker').value = this.value" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="secondary_dark">Secondary Dark Shade</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="color" id="secondary_dark_picker" class="form-input" style="width: 50px; height: 42px; padding: 0.2rem; cursor: pointer; background: transparent; border: none;" value="<?php echo htmlspecialchars($secondaryDark['secondaryDark'] ?? '#B8962E'); ?>" oninput="document.getElementById('secondary_dark').value = this.value" />
+                      <input type="text" id="secondary_dark" name="secondary_dark" class="form-input" value="<?php echo htmlspecialchars($themeColors['secondaryDark'] ?? '#B8962E'); ?>" required oninput="document.getElementById('secondary_dark_picker').value = this.value" />
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Save Branding Color Scheme</button>
+              </form>
+            </div>
+          <?php endif; ?>
+
         </div>
         
       </div>
@@ -2006,6 +2118,49 @@ if ($is_logged_in) {
       `;
       box.appendChild(div);
       div.querySelector('input').focus();
+    }
+
+    function applyColorPreset(preset) {
+      if (!preset) return;
+      const presets = {
+        emerald_gold: {
+          primary: '#006633', primaryLight: '#008844', primaryDark: '#004D26',
+          secondary: '#D4AF37', secondaryLight: '#E5C754', secondaryDark: '#B8962E'
+        },
+        sapphire_silver: {
+          primary: '#0f52ba', primaryLight: '#1a73e8', primaryDark: '#0a3d91',
+          secondary: '#c0c0c0', secondaryLight: '#d8d8d8', secondaryDark: '#a8a8a8'
+        },
+        crimson_gold: {
+          primary: '#990000', primaryLight: '#cc0000', primaryDark: '#660000',
+          secondary: '#D4AF37', secondaryLight: '#E5C754', secondaryDark: '#B8962E'
+        },
+        teal_bronze: {
+          primary: '#005f73', primaryLight: '#0a9396', primaryDark: '#003f4f',
+          secondary: '#ca6702', secondaryLight: '#ee9b00', secondaryDark: '#9b2226'
+        },
+        purple_gold: {
+          primary: '#4a0e4e', primaryLight: '#782f7d', primaryDark: '#27022b',
+          secondary: '#D4AF37', secondaryLight: '#E5C754', secondaryDark: '#B8962E'
+        }
+      };
+      
+      const p = presets[preset];
+      if (p) {
+        document.getElementById('primary_color').value = p.primary;
+        document.getElementById('primary_picker').value = p.primary;
+        document.getElementById('primary_light').value = p.primaryLight;
+        document.getElementById('primary_light_picker').value = p.primaryLight;
+        document.getElementById('primary_dark').value = p.primaryDark;
+        document.getElementById('primary_dark_picker').value = p.primaryDark;
+        
+        document.getElementById('secondary_color').value = p.secondary;
+        document.getElementById('secondary_picker').value = p.secondary;
+        document.getElementById('secondary_light').value = p.secondaryLight;
+        document.getElementById('secondary_light_picker').value = p.secondaryLight;
+        document.getElementById('secondary_dark').value = p.secondaryDark;
+        document.getElementById('secondary_dark_picker').value = p.secondaryDark;
+      }
     }
   </script>
 </body>

@@ -1,5 +1,65 @@
 /* Main dynamic data loading and component rendering */
 
+/* Color Theme and Preferences Initialization */
+(function() {
+  // 1. Theme Color scheme injection from window.schoolData if loaded
+  if (window.schoolData && window.schoolData.themeColors) {
+    applyThemeColors(window.schoolData.themeColors);
+  }
+
+  // 2. Dark/Light Mode activation
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.documentElement.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+  }
+
+  // 3. Sync Language Cookie
+  const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+  const cookieMatch = document.cookie.match(/googtrans=([^;]+)/);
+  const expectedCookieValue = savedLang === 'hi' ? '/en/hi' : '/en/en';
+  if (!cookieMatch || cookieMatch[1] !== expectedCookieValue) {
+    const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
+    if (savedLang === 'hi') {
+      document.cookie = "googtrans=/en/hi; path=/" + cookieDomain;
+      document.cookie = "googtrans=/en/hi; path=/";
+    } else {
+      document.cookie = "googtrans=/en/en; path=/" + cookieDomain;
+      document.cookie = "googtrans=/en/en; path=/";
+    }
+  }
+})();
+
+// Global function to change language
+window.changeLanguage = function(langCode) {
+  localStorage.setItem('selectedLanguage', langCode);
+  const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
+  
+  if (langCode === 'hi') {
+    document.cookie = "googtrans=/en/hi; path=/" + cookieDomain;
+    document.cookie = "googtrans=/en/hi; path=/";
+  } else {
+    document.cookie = "googtrans=/en/en; path=/" + cookieDomain;
+    document.cookie = "googtrans=/en/en; path=/";
+    // Clear cookie
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + cookieDomain;
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+  window.location.reload();
+};
+
+function applyThemeColors(tc) {
+  if (!tc) return;
+  const root = document.documentElement;
+  if (tc.primary) root.style.setProperty('--color-primary', tc.primary);
+  if (tc.primaryLight) root.style.setProperty('--color-primary-light', tc.primaryLight);
+  if (tc.primaryDark) root.style.setProperty('--color-primary-dark', tc.primaryDark);
+  if (tc.secondary) root.style.setProperty('--color-secondary', tc.secondary);
+  if (tc.secondaryLight) root.style.setProperty('--color-secondary-light', tc.secondaryLight);
+  if (tc.secondaryDark) root.style.setProperty('--color-secondary-dark', tc.secondaryDark);
+}
+
 let schoolData = null;
 
 // Fetch and load database data
@@ -7,12 +67,14 @@ async function loadSchoolData() {
   if (schoolData) return schoolData;
   if (window.schoolData) {
     schoolData = window.schoolData;
+    applyThemeColors(schoolData.themeColors);
     return schoolData;
   }
   try {
     const response = await fetch('data/school-data.json');
     if (!response.ok) throw new Error('Network response was not ok');
     schoolData = await response.json();
+    applyThemeColors(schoolData.themeColors);
     return schoolData;
   } catch (error) {
     console.error('Error loading school data:', error);
@@ -29,6 +91,9 @@ function getImagePath(path) {
 function renderNavigation(activePage, data) {
   const header = document.getElementById('main-header');
   if (!header) return;
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  const savedLang = localStorage.getItem('selectedLanguage') || 'en';
 
   const shortName = data.school.shortName.split(',')[0];
   const logoUrl = getImagePath(data.images.logo);
@@ -136,6 +201,29 @@ function renderNavigation(activePage, data) {
         <!-- Desktop Navigation -->
         <div class="hidden lg:flex items-center gap-1">
           ${linksHtml}
+          
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle-btn" class="ml-2 p-2 text-white hover:text-gse-gold rounded-full transition-colors duration-200 flex items-center justify-center" aria-label="Toggle theme">
+            <i data-lucide="${savedTheme === 'dark' ? 'sun' : 'moon'}" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Language Selector Dropdown -->
+          <div class="relative inline-block text-left ml-1" id="language-selector">
+            <button id="lang-dropdown-btn" class="px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 inline-flex items-center gap-1.5 text-white hover:text-gse-gold">
+              <i data-lucide="globe" class="w-4 h-4"></i>
+              <span>${savedLang === 'hi' ? 'हिन्दी' : 'EN'}</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+            </button>
+            <div id="lang-dropdown-menu" class="absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible transition-all duration-200 z-50 py-1 border border-gse-border">
+              <button onclick="changeLanguage('en')" class="w-full text-left block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors ${savedLang !== 'hi' ? 'lang-active' : ''}">
+                English
+              </button>
+              <button onclick="changeLanguage('hi')" class="w-full text-left block px-4 py-2 text-sm text-gse-charcoal hover:bg-gse-cream hover:text-gse-green transition-colors ${savedLang === 'hi' ? 'lang-active' : ''}">
+                हिन्दी (Hindi)
+              </button>
+            </div>
+          </div>
+
           <a href="contact.html" class="ml-3 px-5 py-2 bg-gse-gold text-gse-charcoal text-sm font-semibold rounded-md hover:bg-gse-gold-light transition-all duration-200 shadow-md hover:shadow-lg">
             Apply Now
           </a>
@@ -152,6 +240,29 @@ function renderNavigation(activePage, data) {
     <div id="mobile-menu" class="lg:hidden max-h-0 opacity-0 overflow-hidden transition-all duration-300 bg-white shadow-xl border-t border-gse-border">
       <div class="px-4 py-3 space-y-1">
         ${mobileLinksHtml}
+        
+        <!-- Mobile Preferences Section -->
+        <div class="px-4 py-2 bg-gse-offwhite rounded-md border border-gse-border/50 my-1">
+          <span class="block text-xs font-semibold uppercase tracking-wider text-gse-gray/60 mb-2">Preferences</span>
+          <div class="flex items-center justify-between py-1">
+            <span class="text-sm font-medium text-gse-charcoal">Theme (Dark Mode)</span>
+            <button id="mobile-theme-toggle-btn" class="p-2 bg-white rounded-lg border border-gse-border text-gse-charcoal hover:bg-gse-cream transition-colors flex items-center justify-center">
+              <i data-lucide="${savedTheme === 'dark' ? 'sun' : 'moon'}" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between py-1 mt-2 border-t border-gse-border/30 pt-2">
+            <span class="text-sm font-medium text-gse-charcoal">Language</span>
+            <div class="flex gap-2">
+              <button onclick="changeLanguage('en')" class="px-3 py-1 text-xs font-semibold rounded-md border border-gse-border ${savedLang !== 'hi' ? 'bg-gse-green text-white' : 'bg-white text-gse-charcoal'} hover:bg-gse-cream transition-colors">
+                English
+              </button>
+              <button onclick="changeLanguage('hi')" class="px-3 py-1 text-xs font-semibold rounded-md border border-gse-border ${savedLang === 'hi' ? 'bg-gse-green text-white' : 'bg-white text-gse-charcoal'} hover:bg-gse-cream transition-colors">
+                हिन्दी
+              </button>
+            </div>
+          </div>
+        </div>
+
         <a href="contact.html" class="block mt-3 px-4 py-3 bg-gse-gold text-gse-charcoal text-sm font-semibold rounded-md text-center hover:bg-gse-gold-light transition-colors">
           Apply Now
         </a>
@@ -179,12 +290,58 @@ function renderNavigation(activePage, data) {
     lucide.createIcons();
   });
 
+  // Setup theme toggle logic
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.toggle('dark-theme');
+    const newTheme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', newTheme);
+    
+    // Update both icons
+    const desktopIcon = document.querySelector('#theme-toggle-btn i');
+    const mobileIcon = document.querySelector('#mobile-theme-toggle-btn i');
+    
+    if (desktopIcon) {
+      desktopIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+    }
+    if (mobileIcon) {
+      mobileIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+    }
+    
+    lucide.createIcons();
+  };
+
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle-btn');
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+  if (mobileThemeToggleBtn) mobileThemeToggleBtn.addEventListener('click', toggleTheme);
+
+  // Setup desktop language dropdown toggler
+  const langDropdownBtn = document.getElementById('lang-dropdown-btn');
+  const langDropdownMenu = document.getElementById('lang-dropdown-menu');
+  if (langDropdownBtn && langDropdownMenu) {
+    langDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = langDropdownMenu.classList.contains('invisible');
+      if (isHidden) {
+        langDropdownMenu.classList.remove('opacity-0', 'invisible');
+      } else {
+        langDropdownMenu.classList.add('opacity-0', 'invisible');
+      }
+    });
+    
+    document.addEventListener('click', () => {
+      langDropdownMenu.classList.add('opacity-0', 'invisible');
+    });
+  }
+
   // Handle scroll background toggle
-  window.addEventListener('scroll', () => {
+  const handleScroll = () => {
     const scrolled = window.scrollY > 50;
     const title = header.querySelector('.header-title');
     const subtitle = header.querySelector('.header-subtitle');
     const links = header.querySelectorAll('.nav-link');
+    const themeBtn = header.querySelector('#theme-toggle-btn');
+    const langBtn = header.querySelector('#lang-dropdown-btn');
 
     if (scrolled) {
       header.className = "fixed top-0 left-0 right-0 z-50 transition-all duration-300 nav-solid";
@@ -198,6 +355,14 @@ function renderNavigation(activePage, data) {
       }
       mobileMenuBtn.classList.remove('text-white');
       mobileMenuBtn.classList.add('text-gse-charcoal');
+      if (themeBtn) {
+        themeBtn.classList.remove('text-white');
+        themeBtn.classList.add('text-gse-charcoal');
+      }
+      if (langBtn) {
+        langBtn.classList.remove('text-white');
+        langBtn.classList.add('text-gse-charcoal');
+      }
       links.forEach(l => {
         if (!l.classList.contains('text-gse-gold')) {
           l.classList.add('text-gse-charcoal');
@@ -216,6 +381,14 @@ function renderNavigation(activePage, data) {
       }
       mobileMenuBtn.classList.add('text-white');
       mobileMenuBtn.classList.remove('text-gse-charcoal');
+      if (themeBtn) {
+        themeBtn.classList.add('text-white');
+        themeBtn.classList.remove('text-gse-charcoal');
+      }
+      if (langBtn) {
+        langBtn.classList.add('text-white');
+        langBtn.classList.remove('text-gse-charcoal');
+      }
       links.forEach(l => {
         if (!l.classList.contains('text-gse-gold')) {
           l.classList.remove('text-gse-charcoal');
@@ -223,7 +396,11 @@ function renderNavigation(activePage, data) {
         }
       });
     }
-  });
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  // Initial call to check scrolled state on load
+  setTimeout(handleScroll, 50);
 }
 
 // Render dynamic footer
@@ -389,3 +566,30 @@ function animateCounter(el) {
     }
   }, 16);
 }
+// Initialize Google Translate
+function initGoogleTranslate() {
+  if (!document.getElementById('google_translate_element')) {
+    const div = document.createElement('div');
+    div.id = 'google_translate_element';
+    div.style.display = 'none';
+    document.body.appendChild(div);
+  }
+  
+  window.googleTranslateElementInit = function() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  };
+  
+  const script = document.createElement('script');
+  script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initGoogleTranslate();
+});

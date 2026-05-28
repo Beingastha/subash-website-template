@@ -504,5 +504,13 @@
       "label": "Admissions & Contact Enquiry",
       "href": "/contact"
     }
-  ]
+  ],
+  "themeColors": {
+    "primary": "#006633",
+    "primaryLight": "#008844",
+    "primaryDark": "#004D26",
+    "secondary": "#D4AF37",
+    "secondaryLight": "#E5C754",
+    "secondaryDark": "#B8962E"
+  }
 }
