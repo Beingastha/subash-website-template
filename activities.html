@@ -37,11 +37,9 @@
   <header id="main-header"></header>
 
   <!-- Hero Banner -->
-  <section class="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 z-0">
-      <img id="hero-img" src="" alt="Sports & Activities" class="object-cover w-full h-full" />
-      <div class="absolute inset-0 bg-gradient-to-b from-gse-green-dark/80 via-gse-green/70 to-gse-green-dark/90"></div>
-    </div>
+  <section class="relative h-[35vh] md:h-[45vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-gse-green-dark via-gse-green to-gse-green-dark"></div>
+    <div class="absolute inset-0 pattern-overlay"></div>
     <div class="relative z-10 text-center px-4">
       <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
         Sports & <span class="text-gse-gold">Activities</span>
@@ -134,8 +132,6 @@
   <script src="js/app.js?v=1.4"></script>
   <script>
     function initActivities(data) {
-      document.getElementById('hero-img').src = getImagePath(data.images.sports);
-
       // Featured Activities list
       const featuredList = document.getElementById('featured-activities-list');
       featuredList.innerHTML = data.activities.featured.map((act, idx) => {
