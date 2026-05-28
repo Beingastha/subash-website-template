@@ -40,6 +40,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 
 $is_logged_in = isset($_SESSION['admin_key']);
 $is_master = $_SESSION['is_master'] ?? false;
+$default_tab = $is_master ? 'general-tab' : 'contact-tab';
 
 // Helper to save data back to JSON and JS config
 function saveData($json_data, $data_file, $js_file) {
@@ -95,7 +96,24 @@ if ($is_logged_in) {
     if (file_exists($data_file)) {
         $json_data = json_decode(file_get_contents($data_file), true);
 
-        try {
+        // Security check: Non-master users can only perform 'update_contact' or 'logout'
+        $post_action = $_POST['action'] ?? '';
+        $get_action = $_GET['action'] ?? '';
+        
+        $is_allowed = true;
+        if (!$is_master) {
+            if (!empty($post_action) && $post_action !== 'update_contact') {
+                $is_allowed = false;
+            }
+            if (!empty($get_action) && !in_array($get_action, ['logout'])) {
+                $is_allowed = false;
+            }
+        }
+
+        if (!$is_allowed) {
+            $error_msg = "Access Denied: You do not have permissions to modify this section.";
+        } else {
+            try {
             // ACTION 1: UPDATE GENERAL INFO & STATS
             if (isset($_POST['action']) && $_POST['action'] === 'update_general') {
                 $json_data['school']['fullName'] = trim($_POST['fullName'] ?? '');
@@ -445,6 +463,7 @@ if ($is_logged_in) {
         } catch (Exception $e) {
             $error_msg = "Upload Error: " . $e->getMessage();
         }
+    }
 
         // Reload fresh data configuration for fields
         $json_data = json_decode(file_get_contents($data_file), true);
@@ -798,6 +817,24 @@ if ($is_logged_in) {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--color-border-dark);
+      border-radius: 2px;
     }
 
     .nav-tab {
@@ -1040,7 +1077,7 @@ if ($is_logged_in) {
         <span class="role-badge <?php echo $is_master ? 'master' : ''; ?>">
           <?php echo $is_master ? 'Master Access' : 'Staff Access'; ?>
         </span>
-        <a href="admin.php?action=logout" class="btn-logout">
+        <a href="admin.php?action=logout" class="btn-logout" onclick="localStorage.removeItem('admin_active_tab')">
           Logout
         </a>
       </div>
@@ -1096,18 +1133,19 @@ if ($is_logged_in) {
         
         <!-- Sidebar Navigation Tabs -->
         <div class="sidebar">
-          <button class="nav-tab active" onclick="switchTab('general-tab', this)">General & Stats</button>
-          <button class="nav-tab" onclick="switchTab('principal-tab', this)">Principal Desk</button>
-          <button class="nav-tab" onclick="switchTab('contact-tab', this)">Contact Details</button>
-          <button class="nav-tab" onclick="switchTab('academics-tab', this)">Academic streams</button>
-          <button class="nav-tab" onclick="switchTab('activities-tab', this)">Activities & Sports</button>
-          <button class="nav-tab" onclick="switchTab('hostel-tab', this)">Hostel & Rules</button>
-          <button class="nav-tab" onclick="switchTab('notices-tab', this)">Circulars & Notices</button>
-          <button class="nav-tab" onclick="switchTab('teachers-tab', this)">Faculty List</button>
-          <button class="nav-tab" onclick="switchTab('testimonials-tab', this)">Reviews / Alumni</button>
-          
           <?php if ($is_master): ?>
+            <button class="nav-tab active" onclick="switchTab('general-tab', this)">General & Stats</button>
+            <button class="nav-tab" onclick="switchTab('principal-tab', this)">Principal Desk</button>
+            <button class="nav-tab" onclick="switchTab('contact-tab', this)">Contact Details</button>
+            <button class="nav-tab" onclick="switchTab('academics-tab', this)">Academic Streams</button>
+            <button class="nav-tab" onclick="switchTab('activities-tab', this)">Activities & Sports</button>
+            <button class="nav-tab" onclick="switchTab('hostel-tab', this)">Hostel & Rules</button>
+            <button class="nav-tab" onclick="switchTab('notices-tab', this)">Circulars & Notices</button>
+            <button class="nav-tab" onclick="switchTab('teachers-tab', this)">Faculty List</button>
+            <button class="nav-tab" onclick="switchTab('testimonials-tab', this)">Reviews / Alumni</button>
             <button class="nav-tab" style="border-color: var(--color-gold);" onclick="switchTab('keys-tab', this)">Manage Access Keys</button>
+          <?php else: ?>
+            <button class="nav-tab active" onclick="switchTab('contact-tab', this)">Contact Details</button>
           <?php endif; ?>
         </div>
         
@@ -1115,7 +1153,8 @@ if ($is_logged_in) {
         <div class="content-area">
           
           <!-- TAB 1: GENERAL INFO & STATS -->
-          <div id="general-tab" class="tab-content active">
+          <?php if ($is_master): ?>
+            <div id="general-tab" class="tab-content <?php echo ($default_tab === 'general-tab') ? 'active' : ''; ?>">
             <h2 class="section-title">General Settings & Statistics</h2>
             <p class="section-desc">Manage school name, medium, registration codes, hero image, and counters.</p>
             
@@ -1190,58 +1229,61 @@ if ($is_logged_in) {
               <button type="submit" class="btn-submit">Save Settings & Stats</button>
             </form>
           </div>
+          <?php endif; ?>
           
           <!-- TAB 2: PRINCIPAL MESSAGE -->
-          <div id="principal-tab" class="tab-content">
-            <h2 class="section-title">Principal Desk Settings</h2>
-            <p class="section-desc">Edit details about the school principal, including credential, statement, vision, and profile picture.</p>
-            
-            <form action="admin.php" method="POST" enctype="multipart/form-data">
-              <input type="hidden" name="action" value="update_principal" />
+          <?php if ($is_master): ?>
+            <div id="principal-tab" class="tab-content <?php echo ($default_tab === 'principal-tab') ? 'active' : ''; ?>">
+              <h2 class="section-title">Principal Desk Settings</h2>
+              <p class="section-desc">Edit details about the school principal, including credential, statement, vision, and profile picture.</p>
               
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="p_name">Principal Name</label>
-                  <input type="text" id="p_name" name="p_name" class="form-input" value="<?php echo htmlspecialchars($principal['name'] ?? ''); ?>" required />
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="p_qual">Qualifications</label>
-                  <input type="text" id="p_qual" name="p_qual" class="form-input" value="<?php echo htmlspecialchars($principal['qualification'] ?? ''); ?>" required />
-                </div>
-                <div class="form-group grid-full">
-                  <label class="form-label" for="p_exp">Total Experience</label>
-                  <input type="text" id="p_exp" name="p_exp" class="form-input" value="<?php echo htmlspecialchars($principal['experience'] ?? ''); ?>" />
-                </div>
+              <form action="admin.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="update_principal" />
                 
-                <div class="form-group grid-full">
-                  <label class="form-label" for="principal_photo">Replace Principal Profile Photo</label>
-                  <input type="file" id="principal_photo" name="principal_photo" class="form-input" accept="image/*" />
-                  <div class="current-image-preview">
-                    <img src="<?php echo htmlspecialchars($images['principal'] ?? ''); ?>" alt="Principal" />
-                    <span>Current: <?php echo htmlspecialchars($images['principal'] ?? ''); ?></span>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="p_name">Principal Name</label>
+                    <input type="text" id="p_name" name="p_name" class="form-input" value="<?php echo htmlspecialchars($principal['name'] ?? ''); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="p_qual">Qualifications</label>
+                    <input type="text" id="p_qual" name="p_qual" class="form-input" value="<?php echo htmlspecialchars($principal['qualification'] ?? ''); ?>" required />
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="p_exp">Total Experience</label>
+                    <input type="text" id="p_exp" name="p_exp" class="form-input" value="<?php echo htmlspecialchars($principal['experience'] ?? ''); ?>" />
+                  </div>
+                  
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="principal_photo">Replace Principal Profile Photo</label>
+                    <input type="file" id="principal_photo" name="principal_photo" class="form-input" accept="image/*" />
+                    <div class="current-image-preview">
+                      <img src="<?php echo htmlspecialchars($images['principal'] ?? ''); ?>" alt="Principal" />
+                      <span>Current: <?php echo htmlspecialchars($images['principal'] ?? ''); ?></span>
+                    </div>
+                  </div>
+  
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="p_msg">From Principal's Desk (Full Statement Message)</label>
+                    <textarea id="p_msg" name="p_msg" class="form-input" required><?php echo htmlspecialchars($principal['message'] ?? ''); ?></textarea>
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="p_vision">School Vision</label>
+                    <textarea id="p_vision" name="p_vision" class="form-input" required><?php echo htmlspecialchars($principal['vision'] ?? ''); ?></textarea>
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="p_mission">School Mission</label>
+                    <textarea id="p_mission" name="p_mission" class="form-input" required><?php echo htmlspecialchars($principal['mission'] ?? ''); ?></textarea>
                   </div>
                 </div>
-
-                <div class="form-group grid-full">
-                  <label class="form-label" for="p_msg">From Principal's Desk (Full Statement Message)</label>
-                  <textarea id="p_msg" name="p_msg" class="form-input" required><?php echo htmlspecialchars($principal['message'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-group grid-full">
-                  <label class="form-label" for="p_vision">School Vision</label>
-                  <textarea id="p_vision" name="p_vision" class="form-input" required><?php echo htmlspecialchars($principal['vision'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-group grid-full">
-                  <label class="form-label" for="p_mission">School Mission</label>
-                  <textarea id="p_mission" name="p_mission" class="form-input" required><?php echo htmlspecialchars($principal['mission'] ?? ''); ?></textarea>
-                </div>
-              </div>
-              
-              <button type="submit" class="btn-submit">Save Principal Message</button>
-            </form>
-          </div>
+                
+                <button type="submit" class="btn-submit">Save Principal Message</button>
+              </form>
+            </div>
+          <?php endif; ?>
           
           <!-- TAB 3: CONTACT DETAILS -->
-          <div id="contact-tab" class="tab-content">
+          <div id="contact-tab" class="tab-content <?php echo ($default_tab === 'contact-tab') ? 'active' : ''; ?>">
             <h2 class="section-title">Communication & Address Info</h2>
             <p class="section-desc">Edit contact channels, social networks, and postal coordinates.</p>
             
@@ -1313,171 +1355,178 @@ if ($is_logged_in) {
           </div>
           
           <!-- TAB 4: ACADEMIC DETAILS -->
-          <div id="academics-tab" class="tab-content">
-            <h2 class="section-title">Academic Streams & Facilities</h2>
-            <p class="section-desc">Manage your course curriculum, active academic streams, and educational facility cards.</p>
-            
-            <form action="admin.php" method="POST" enctype="multipart/form-data">
-              <input type="hidden" name="action" value="update_academics" />
+          <?php if ($is_master): ?>
+            <div id="academics-tab" class="tab-content <?php echo ($default_tab === 'academics-tab') ? 'active' : ''; ?>">
+              <h2 class="section-title">Academic Streams & Facilities</h2>
+              <p class="section-desc">Manage your course curriculum, active academic streams, and educational facility cards.</p>
               
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="a_curr">Curriculum Board</label>
-                  <input type="text" id="a_curr" name="a_curr" class="form-input" value="<?php echo htmlspecialchars($academics['curriculum'] ?? ''); ?>" required />
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="a_streams">Academic Streams Offered (Comma separated)</label>
-                  <input type="text" id="a_streams" name="a_streams" class="form-input" value="<?php echo htmlspecialchars(implode(', ', $academics['streams'] ?? [])); ?>" required />
-                </div>
-                <div class="form-group grid-full">
-                  <label class="form-label" for="a_desc">Academics Section Overview Description</label>
-                  <textarea id="a_desc" name="a_desc" class="form-input" required><?php echo htmlspecialchars($academics['description'] ?? ''); ?></textarea>
-                </div>
-              </div>
-
-              <!-- Academic Facilities loop -->
-              <?php for ($i = 0; $i < 3; $i++): $fac = $academics['facilities'][$i] ?? ['title'=>'','description'=>'','image'=>'']; ?>
-                <h3 class="form-section-header">Academic Facility Card <?php echo $i+1; ?></h3>
+              <form action="admin.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="update_academics" />
+                
                 <div class="form-grid">
-                  <div class="form-group grid-full">
-                    <label class="form-label">Facility Title</label>
-                    <input type="text" name="fac_title_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($fac['title']); ?>" required />
+                  <div class="form-group">
+                    <label class="form-label" for="a_curr">Curriculum Board</label>
+                    <input type="text" id="a_curr" name="a_curr" class="form-input" value="<?php echo htmlspecialchars($academics['curriculum'] ?? ''); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="a_streams">Academic Streams Offered (Comma separated)</label>
+                    <input type="text" id="a_streams" name="a_streams" class="form-input" value="<?php echo htmlspecialchars(implode(', ', $academics['streams'] ?? [])); ?>" required />
                   </div>
                   <div class="form-group grid-full">
-                    <label class="form-label">Facility Description</label>
-                    <textarea name="fac_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($fac['description']); ?></textarea>
-                  </div>
-                  <div class="form-group grid-full">
-                    <label class="form-label">Replace Facility Image</label>
-                    <input type="file" name="fac_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
-                    <div class="current-image-preview">
-                      <img src="<?php echo htmlspecialchars($fac['image']); ?>" alt="Facility" />
-                      <span>Current: <?php echo htmlspecialchars($fac['image']); ?></span>
-                    </div>
+                    <label class="form-label" for="a_desc">Academics Section Overview Description</label>
+                    <textarea id="a_desc" name="a_desc" class="form-input" required><?php echo htmlspecialchars($academics['description'] ?? ''); ?></textarea>
                   </div>
                 </div>
-              <?php endfor; ?>
-              
-              <button type="submit" class="btn-submit">Save Academic Details</button>
-            </form>
-          </div>
-          
-          <!-- TAB 5: SPORTS & ACTIVITIES -->
-          <div id="activities-tab" class="tab-content">
-            <h2 class="section-title">Sports & Extracurricular Activities</h2>
-            <p class="section-desc">Edit training descriptions, facilities, and replacement photos for sport and activity programs.</p>
-            
-            <form action="admin.php" method="POST" enctype="multipart/form-data">
-              <input type="hidden" name="action" value="update_activities" />
-              
-              <!-- Featured Activities Loop (Badminton, Boxing, Cricket) -->
-              <?php for ($i = 0; $i < 3; $i++): $act = $activities['featured'][$i] ?? ['title'=>'','description'=>'','facilities'=>'','coaching'=>'','achievements'=>'','schedule'=>'','image'=>'']; ?>
-                <h3 class="form-section-header">Featured Sport: <?php echo htmlspecialchars($act['title']); ?></h3>
-                <div class="form-grid">
-                  <div class="form-group grid-full">
-                    <label class="form-label">Overview Description</label>
-                    <textarea name="act_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($act['description']); ?></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Court / Ring / Pitch Facilities</label>
-                    <input type="text" name="act_fac_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['facilities']); ?>" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Coaching Details</label>
-                    <input type="text" name="act_coach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['coaching']); ?>" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Key Sport Achievements</label>
-                    <input type="text" name="act_ach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['achievements']); ?>" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Training Schedule</label>
-                    <input type="text" name="act_sched_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['schedule']); ?>" required />
-                  </div>
-                  <div class="form-group grid-full">
-                    <label class="form-label">Replace Sport Image</label>
-                    <input type="file" name="act_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
-                    <div class="current-image-preview">
-                      <img src="<?php echo htmlspecialchars($act['image']); ?>" alt="Sport" />
-                      <span>Current: <?php echo htmlspecialchars($act['image']); ?></span>
+  
+                <!-- Academic Facilities loop -->
+                <?php for ($i = 0; $i < 3; $i++): $fac = $academics['facilities'][$i] ?? ['title'=>'','description'=>'','image'=>'']; ?>
+                  <h3 class="form-section-header">Academic Facility Card <?php echo $i+1; ?></h3>
+                  <div class="form-grid">
+                    <div class="form-group grid-full">
+                      <label class="form-label">Facility Title</label>
+                      <input type="text" name="fac_title_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($fac['title']); ?>" required />
                     </div>
-                  </div>
-                </div>
-              <?php endfor; ?>
-
-              <!-- Other Activities Descriptions -->
-              <h3 class="form-section-header">Other Activities (Quick descriptions)</h3>
-              <div class="form-grid">
-                <?php for ($i = 0; $i < 6; $i++): $oth = $activities['other'][$i] ?? ['title'=>'','description'=>'']; ?>
-                  <div class="form-group grid-full">
-                    <label class="form-label"><?php echo htmlspecialchars($oth['title']); ?> Description</label>
-                    <textarea name="other_act_desc_<?php echo $i; ?>" class="form-input" style="min-height: 70px" required><?php echo htmlspecialchars($oth['description']); ?></textarea>
+                    <div class="form-group grid-full">
+                      <label class="form-label">Facility Description</label>
+                      <textarea name="fac_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($fac['description']); ?></textarea>
+                    </div>
+                    <div class="form-group grid-full">
+                      <label class="form-label">Replace Facility Image</label>
+                      <input type="file" name="fac_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
+                      <div class="current-image-preview">
+                        <img src="<?php echo htmlspecialchars($fac['image']); ?>" alt="Facility" />
+                        <span>Current: <?php echo htmlspecialchars($fac['image']); ?></span>
+                      </div>
+                    </div>
                   </div>
                 <?php endfor; ?>
-              </div>
+                
+                <button type="submit" class="btn-submit">Save Academic Details</button>
+              </form>
+            </div>
+          <?php endif; ?>
+          
+          <!-- TAB 5: SPORTS & ACTIVITIES -->
+          <?php if ($is_master): ?>
+            <div id="activities-tab" class="tab-content <?php echo ($default_tab === 'activities-tab') ? 'active' : ''; ?>">
+              <h2 class="section-title">Sports & Extracurricular Activities</h2>
+              <p class="section-desc">Edit training descriptions, facilities, and replacement photos for sport and activity programs.</p>
               
-              <button type="submit" class="btn-submit">Save Activities Details</button>
-            </form>
-          </div>
+              <form action="admin.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="update_activities" />
+                
+                <!-- Featured Activities Loop (Badminton, Boxing, Cricket) -->
+                <?php for ($i = 0; $i < 3; $i++): $act = $activities['featured'][$i] ?? ['title'=>'','description'=>'','facilities'=>'','coaching'=>'','achievements'=>'','schedule'=>'','image'=>'']; ?>
+                  <h3 class="form-section-header">Featured Sport: <?php echo htmlspecialchars($act['title']); ?></h3>
+                  <div class="form-grid">
+                    <div class="form-group grid-full">
+                      <label class="form-label">Overview Description</label>
+                      <textarea name="act_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($act['description']); ?></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Court / Ring / Pitch Facilities</label>
+                      <input type="text" name="act_fac_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['facilities']); ?>" required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Coaching Details</label>
+                      <input type="text" name="act_coach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['coaching']); ?>" required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Key Sport Achievements</label>
+                      <input type="text" name="act_ach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['achievements']); ?>" required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Training Schedule</label>
+                      <input type="text" name="act_sched_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['schedule']); ?>" required />
+                    </div>
+                    <div class="form-group grid-full">
+                      <label class="form-label">Replace Sport Image</label>
+                      <input type="file" name="act_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
+                      <div class="current-image-preview">
+                        <img src="<?php echo htmlspecialchars($act['image']); ?>" alt="Sport" />
+                        <span>Current: <?php echo htmlspecialchars($act['image']); ?></span>
+                      </div>
+                    </div>
+                  </div>
+                <?php endfor; ?>
+  
+                <!-- Other Activities Descriptions -->
+                <h3 class="form-section-header">Other Activities (Quick descriptions)</h3>
+                <div class="form-grid">
+                  <?php for ($i = 0; $i < 6; $i++): $oth = $activities['other'][$i] ?? ['title'=>'','description'=>'']; ?>
+                    <div class="form-group grid-full">
+                      <label class="form-label"><?php echo htmlspecialchars($oth['title']); ?> Description</label>
+                      <textarea name="other_act_desc_<?php echo $i; ?>" class="form-input" style="min-height: 70px" required><?php echo htmlspecialchars($oth['description']); ?></textarea>
+                    </div>
+                  <?php endfor; ?>
+                </div>
+                
+                <button type="submit" class="btn-submit">Save Activities Details</button>
+              </form>
+            </div>
+          <?php endif; ?>
           
           <!-- TAB 6: HOSTEL & RULES -->
-          <div id="hostel-tab" class="tab-content">
-            <h2 class="section-title">Hostel, Mess & Safety Rules</h2>
-            <p class="section-desc">Manage boarding capacity, wardens contact info, features, and regulatory guidelines.</p>
-            
-            <form action="admin.php" method="POST">
-              <input type="hidden" name="action" value="update_hostel" />
+          <?php if ($is_master): ?>
+            <div id="hostel-tab" class="tab-content <?php echo ($default_tab === 'hostel-tab') ? 'active' : ''; ?>">
+              <h2 class="section-title">Hostel, Mess & Safety Rules</h2>
+              <p class="section-desc">Manage boarding capacity, wardens contact info, features, and regulatory guidelines.</p>
               
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="h_capacity">Hostel Boarding Capacity</label>
-                  <input type="number" id="h_capacity" name="h_capacity" class="form-input" value="<?php echo intval($hostel['capacity'] ?? 100); ?>" required />
-                </div>
-                <div class="form-group grid-full">
-                  <label class="form-label" for="h_overview">Hostel overview text</label>
-                  <textarea id="h_overview" name="h_overview" class="form-input" required><?php echo htmlspecialchars($hostel['overview'] ?? ''); ?></textarea>
-                </div>
-              </div>
-
-              <!-- Wardens -->
-              <?php for ($i = 0; $i < 2; $i++): $war = $hostel['wardens'][$i] ?? ['name'=>'','designation'=>'','phone'=>'']; ?>
-                <h3 class="form-section-header">Hostel Warden <?php echo $i+1; ?> Details</h3>
+              <form action="admin.php" method="POST">
+                <input type="hidden" name="action" value="update_hostel" />
+                
                 <div class="form-grid">
                   <div class="form-group">
-                    <label class="form-label">Warden Name</label>
-                    <input type="text" name="w_name_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['name']); ?>" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Designation / Rank</label>
-                    <input type="text" name="w_desg_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['designation']); ?>" required />
+                    <label class="form-label" for="h_capacity">Hostel Boarding Capacity</label>
+                    <input type="number" id="h_capacity" name="h_capacity" class="form-input" value="<?php echo intval($hostel['capacity'] ?? 100); ?>" required />
                   </div>
                   <div class="form-group grid-full">
-                    <label class="form-label">Contact Phone</label>
-                    <input type="text" name="w_phone_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['phone']); ?>" required />
+                    <label class="form-label" for="h_overview">Hostel overview text</label>
+                    <textarea id="h_overview" name="h_overview" class="form-input" required><?php echo htmlspecialchars($hostel['overview'] ?? ''); ?></textarea>
                   </div>
                 </div>
-              <?php endfor; ?>
-
-              <!-- Rules Management -->
-              <h3 class="form-section-header">Hostel Rules & Regulations</h3>
-              <p class="generator-desc" style="margin-top: -0.5rem; margin-bottom: 1rem;">Add or remove boarding rules. Empty lines are automatically ignored.</p>
-              
-              <div class="rules-container" id="rules-box">
-                <?php foreach (($hostel['rules'] ?? []) as $r): ?>
-                  <div class="rule-row">
-                    <input type="text" name="h_rules[]" class="form-input" value="<?php echo htmlspecialchars($r); ?>" />
-                    <button type="button" class="btn-icon-danger" onclick="this.parentElement.remove()">Remove</button>
+  
+                <!-- Wardens -->
+                <?php for ($i = 0; $i < 2; $i++): $war = $hostel['wardens'][$i] ?? ['name'=>'','designation'=>'','phone'=>'']; ?>
+                  <h3 class="form-section-header">Hostel Warden <?php echo $i+1; ?> Details</h3>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label class="form-label">Warden Name</label>
+                      <input type="text" name="w_name_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['name']); ?>" required />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Designation / Rank</label>
+                      <input type="text" name="w_desg_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['designation']); ?>" required />
+                    </div>
+                    <div class="form-group grid-full">
+                      <label class="form-label">Contact Phone</label>
+                      <input type="text" name="w_phone_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['phone']); ?>" required />
+                    </div>
                   </div>
-                <?php endforeach; ?>
-              </div>
-              <button type="button" class="btn-secondary" style="margin-bottom: 2rem;" onclick="addNewRuleRow()">+ Add New Rule</button>
-              
-              <button type="submit" class="btn-submit">Save Hostel Details & Rules</button>
-            </form>
-          </div>
+                <?php endfor; ?>
+  
+                <!-- Rules Management -->
+                <h3 class="form-section-header">Hostel Rules & Regulations</h3>
+                <p class="generator-desc" style="margin-top: -0.5rem; margin-bottom: 1rem;">Add or remove boarding rules. Empty lines are automatically ignored.</p>
+                
+                <div class="rules-container" id="rules-box">
+                  <?php foreach (($hostel['rules'] ?? []) as $r): ?>
+                    <div class="rule-row">
+                      <input type="text" name="h_rules[]" class="form-input" value="<?php echo htmlspecialchars($r); ?>" />
+                      <button type="button" class="btn-icon-danger" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+                <button type="button" class="btn-secondary" style="margin-bottom: 2rem;" onclick="addNewRuleRow()">+ Add New Rule</button>
+                
+                <button type="submit" class="btn-submit">Save Hostel Details & Rules</button>
+              </form>
+            </div>
+          <?php endif; ?>
           
           <!-- TAB 7: CIRCULARS & NOTICES -->
-          <div id="notices-tab" class="tab-content">
+          <?php if ($is_master): ?>
+            <div id="notices-tab" class="tab-content <?php echo ($default_tab === 'notices-tab') ? 'active' : ''; ?>">
             <h2 class="section-title">School Circulars & Notices</h2>
             <p class="section-desc">Broadcast official updates, schedules, timetables, and academic circulars to students.</p>
             
@@ -1530,10 +1579,11 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Publish Circular & Notice</button>
               </form>
             </div>
-          </div>
+          <?php endif; ?>
           
           <!-- TAB 8: FACULTY LIST -->
-          <div id="teachers-tab" class="tab-content">
+          <?php if ($is_master): ?>
+            <div id="teachers-tab" class="tab-content <?php echo ($default_tab === 'teachers-tab') ? 'active' : ''; ?>">
             <h2 class="section-title">Manage Faculty & Teachers</h2>
             <p class="section-desc">Add or remove teachers, administrative coordinators, and coaches from the website profile directory.</p>
             
@@ -1589,10 +1639,11 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Register Faculty Member</button>
               </form>
             </div>
-          </div>
+          <?php endif; ?>
           
           <!-- TAB 9: TESTIMONIALS -->
-          <div id="testimonials-tab" class="tab-content">
+          <?php if ($is_master): ?>
+            <div id="testimonials-tab" class="tab-content <?php echo ($default_tab === 'testimonials-tab') ? 'active' : ''; ?>">
             <h2 class="section-title">Manage Reviews & Alumni Feedback</h2>
             <p class="section-desc">Broadcast parent comments, student achievements, and alumni feedback.</p>
             
@@ -1644,11 +1695,11 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Submit Website Review</button>
               </form>
             </div>
-          </div>
+          <?php endif; ?>
           
           <?php if ($is_master): ?>
             <!-- TAB 10: ACCESS KEYS (Master Only) -->
-            <div id="keys-tab" class="tab-content">
+            <div id="keys-tab" class="tab-content <?php echo ($default_tab === 'keys-tab') ? 'active' : ''; ?>">
               <h2 class="section-title">Manage CMS Access Keys</h2>
               <p class="section-desc">Generate secure keys for staff editors, or revoke keys to lock access instantly.</p>
               
@@ -1733,13 +1784,35 @@ if ($is_logged_in) {
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
-      document.getElementById(tabId).classList.add('active');
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) {
+        targetTab.classList.add('active');
+      }
       
       document.querySelectorAll('.nav-tab').forEach(item => {
         item.classList.remove('active');
       });
-      el.classList.add('active');
+      if (el) {
+        el.classList.add('active');
+      }
+      
+      // Persist active tab across page reloads
+      localStorage.setItem('admin_active_tab', tabId);
     }
+    
+    // Restore active tab on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTab = localStorage.getItem('admin_active_tab');
+      if (savedTab) {
+        const tabButton = Array.from(document.querySelectorAll('.nav-tab')).find(btn => {
+          const onclickAttr = btn.getAttribute('onclick');
+          return onclickAttr && onclickAttr.includes(savedTab);
+        });
+        if (tabButton) {
+          switchTab(savedTab, tabButton);
+        }
+      }
+    });
     
     function generateRandomKey() {
       const rand = Math.floor(100 + Math.random() * 900);
