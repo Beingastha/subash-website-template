@@ -41,101 +41,426 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 $is_logged_in = isset($_SESSION['admin_key']);
 $is_master = $_SESSION['is_master'] ?? false;
 
-// Handle Logged In Actions
+// Helper to save data back to JSON and JS config
+function saveData($json_data, $data_file, $js_file) {
+    $new_json = json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if (file_put_contents($data_file, $new_json) === false) {
+        return false;
+    }
+    $new_js = "window.schoolData = " . $new_json . ";\n";
+    if (file_put_contents($js_file, $new_js) === false) {
+        return false;
+    }
+    return true;
+}
+
+// Helper to handle dynamic image uploads
+function handleImageUpload($file_key, $current_path) {
+    if (!isset($_FILES[$file_key]) || $_FILES[$file_key]['error'] !== UPLOAD_ERR_OK) {
+        return $current_path;
+    }
+    
+    $file = $_FILES[$file_key];
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $file_type = mime_content_type($file['tmp_name']);
+    
+    if (!in_array($file_type, $allowed_types)) {
+        throw new Exception("Invalid file type for '{$file_key}'. Only JPG, PNG, GIF, and WEBP images are allowed.");
+    }
+    
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    if (empty($ext)) {
+        $ext = ($file_type === 'image/png') ? 'png' : (($file_type === 'image/webp') ? 'webp' : (($file_type === 'image/gif') ? 'gif' : 'jpg'));
+    }
+    
+    $filename = $file_key . '_' . time() . '.' . $ext;
+    $target_dir = __DIR__ . '/images/';
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0755, true);
+    }
+    
+    $target_path = $target_dir . $filename;
+    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+        return '/images/' . $filename;
+    } else {
+        throw new Exception("Failed to save uploaded file '{$file_key}' to target directory. Check write permissions.");
+    }
+}
+
+// Handle Logged In CMS Actions
 if ($is_logged_in) {
     $data_file = __DIR__ . '/data/school-data.json';
     $js_file = __DIR__ . '/js/data.js';
 
-    // 1. Update Contact Information
-    if (isset($_POST['action']) && $_POST['action'] === 'update_contact') {
-        if (file_exists($data_file)) {
-            $json_data = json_decode(file_get_contents($data_file), true);
-
-            // Update contact details
-            $json_data['school']['contact']['phone'] = trim($_POST['phone'] ?? '');
-            $json_data['school']['contact']['email'] = trim($_POST['email'] ?? '');
-            $json_data['school']['contact']['officeHours'] = trim($_POST['officeHours'] ?? '');
-
-            // Update address details
-            $json_data['school']['address']['street'] = trim($_POST['street'] ?? '');
-            $json_data['school']['address']['area'] = trim($_POST['area'] ?? '');
-            $json_data['school']['address']['city'] = trim($_POST['city'] ?? '');
-            $json_data['school']['address']['state'] = trim($_POST['state'] ?? '');
-            $json_data['school']['address']['pincode'] = trim($_POST['pincode'] ?? '');
-
-            // Update social media links
-            $json_data['school']['social']['facebook'] = trim($_POST['facebook'] ?? '');
-            $json_data['school']['social']['instagram'] = trim($_POST['instagram'] ?? '');
-            $json_data['school']['social']['linkedin'] = trim($_POST['linkedin'] ?? '');
-            $json_data['school']['social']['youtube'] = trim($_POST['youtube'] ?? '');
-
-            // Save JSON file
-            $new_json = json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            if (file_put_contents($data_file, $new_json)) {
-                // Save JS file to keep them in sync
-                $new_js = "window.schoolData = " . $new_json . ";\n";
-                file_put_contents($js_file, $new_js);
-                $success_msg = "Contact information updated successfully!";
-            } else {
-                $error_msg = "Failed to write updates to data files. Check file permissions.";
-            }
-        } else {
-            $error_msg = "Database file school-data.json not found.";
-        }
-    }
-
-    // 2. Add New Access Key (Master Only)
-    if ($is_master && isset($_POST['action']) && $_POST['action'] === 'add_key') {
-        $new_key = trim($_POST['new_key'] ?? '');
-        $new_label = trim($_POST['new_label'] ?? 'Staff Key');
-
-        if (empty($new_key)) {
-            $error_msg = "Access key cannot be empty.";
-        } elseif ($new_key === $MASTER_KEY || array_key_exists($new_key, $ACCESS_KEYS)) {
-            $error_msg = "This access key already exists.";
-        } else {
-            $ACCESS_KEYS[$new_key] = $new_label;
-            $keys_content = "<?php\n"
-                          . "if (!defined('SECURE_ACCESS')) die('Direct access forbidden');\n"
-                          . "\$MASTER_KEY = " . var_export($MASTER_KEY, true) . ";\n"
-                          . "\$ACCESS_KEYS = " . var_export($ACCESS_KEYS, true) . ";\n";
-            if (file_put_contents($keys_file, $keys_content)) {
-                $success_msg = "Access key '{$new_label}' added successfully!";
-            } else {
-                $error_msg = "Failed to save the new key. Check file permissions on data/keys.php.";
-            }
-        }
-    }
-
-    // 3. Revoke/Delete Access Key (Master Only)
-    if ($is_master && isset($_GET['action']) && $_GET['action'] === 'revoke_key') {
-        $key_to_revoke = trim($_GET['key'] ?? '');
-        if (array_key_exists($key_to_revoke, $ACCESS_KEYS)) {
-            unset($ACCESS_KEYS[$key_to_revoke]);
-            $keys_content = "<?php\n"
-                          . "if (!defined('SECURE_ACCESS')) die('Direct access forbidden');\n"
-                          . "\$MASTER_KEY = " . var_export($MASTER_KEY, true) . ";\n"
-                          . "\$ACCESS_KEYS = " . var_export($ACCESS_KEYS, true) . ";\n";
-            if (file_put_contents($keys_file, $keys_content)) {
-                $success_msg = "Access key revoked successfully.";
-            } else {
-                $error_msg = "Failed to update keys. Check file permissions on data/keys.php.";
-            }
-        } else {
-            $error_msg = "Key not found or could not be revoked.";
-        }
-    }
-
-    // Load dynamic data for forms
-    $contact = ['phone' => '', 'email' => '', 'officeHours' => ''];
-    $address = ['street' => '', 'area' => '', 'city' => '', 'state' => '', 'pincode' => ''];
-    $social = ['facebook' => '', 'instagram' => '', 'linkedin' => '', 'youtube' => ''];
-
     if (file_exists($data_file)) {
         $json_data = json_decode(file_get_contents($data_file), true);
-        $contact = array_merge($contact, $json_data['school']['contact'] ?? []);
-        $address = array_merge($address, $json_data['school']['address'] ?? []);
-        $social = array_merge($social, $json_data['school']['social'] ?? []);
+
+        try {
+            // ACTION 1: UPDATE GENERAL INFO & STATS
+            if (isset($_POST['action']) && $_POST['action'] === 'update_general') {
+                $json_data['school']['fullName'] = trim($_POST['fullName'] ?? '');
+                $json_data['school']['shortName'] = trim($_POST['shortName'] ?? '');
+                $json_data['school']['establishedYear'] = intval($_POST['establishedYear'] ?? 2002);
+                $json_data['school']['type'] = trim($_POST['type'] ?? '');
+                $json_data['school']['department'] = trim($_POST['department'] ?? '');
+                $json_data['school']['board'] = trim($_POST['board'] ?? '');
+                $json_data['school']['udiseCode'] = trim($_POST['udiseCode'] ?? '');
+                $json_data['school']['medium'] = trim($_POST['medium'] ?? '');
+                $json_data['school']['grades'] = trim($_POST['grades'] ?? '');
+                
+                // Update stats
+                for ($i = 0; $i < 4; $i++) {
+                    if (isset($json_data['statistics'][$i])) {
+                        $json_data['statistics'][$i]['value'] = intval($_POST["stat_val_{$i}"] ?? 0);
+                        $json_data['statistics'][$i]['suffix'] = trim($_POST["stat_suf_{$i}"] ?? '');
+                        $json_data['statistics'][$i]['label'] = trim($_POST["stat_lab_{$i}"] ?? '');
+                    }
+                }
+
+                // Handle optional Hero image upload
+                $json_data['images']['hero'] = handleImageUpload('hero_img', $json_data['images']['hero']);
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "General school information and statistics updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files. Check file permissions.";
+                }
+            }
+
+            // ACTION 2: UPDATE CONTACT DETAILS
+            elseif (isset($_POST['action']) && $_POST['action'] === 'update_contact') {
+                $json_data['school']['contact']['phone'] = trim($_POST['phone'] ?? '');
+                $json_data['school']['contact']['email'] = trim($_POST['email'] ?? '');
+                $json_data['school']['contact']['officeHours'] = trim($_POST['officeHours'] ?? '');
+
+                $json_data['school']['address']['street'] = trim($_POST['street'] ?? '');
+                $json_data['school']['address']['area'] = trim($_POST['area'] ?? '');
+                $json_data['school']['address']['city'] = trim($_POST['city'] ?? '');
+                $json_data['school']['address']['state'] = trim($_POST['state'] ?? '');
+                $json_data['school']['address']['pincode'] = trim($_POST['pincode'] ?? '');
+
+                $json_data['school']['social']['facebook'] = trim($_POST['facebook'] ?? '');
+                $json_data['school']['social']['instagram'] = trim($_POST['instagram'] ?? '');
+                $json_data['school']['social']['linkedin'] = trim($_POST['linkedin'] ?? '');
+                $json_data['school']['social']['youtube'] = trim($_POST['youtube'] ?? '');
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Contact details updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files. Check file permissions.";
+                }
+            }
+
+            // ACTION 3: UPDATE PRINCIPAL MESSAGE
+            elseif (isset($_POST['action']) && $_POST['action'] === 'update_principal') {
+                $json_data['principal']['name'] = trim($_POST['p_name'] ?? '');
+                $json_data['principal']['qualification'] = trim($_POST['p_qual'] ?? '');
+                $json_data['principal']['experience'] = trim($_POST['p_exp'] ?? '');
+                $json_data['principal']['message'] = trim($_POST['p_msg'] ?? '');
+                $json_data['principal']['vision'] = trim($_POST['p_vision'] ?? '');
+                $json_data['principal']['mission'] = trim($_POST['p_mission'] ?? '');
+
+                // Handle principal photo upload
+                $json_data['images']['principal'] = handleImageUpload('principal_photo', $json_data['images']['principal']);
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Principal desk message and info updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files. Check file permissions.";
+                }
+            }
+
+            // ACTION 4: NOTICE BOARD - ADD NOTICE
+            elseif (isset($_POST['action']) && $_POST['action'] === 'add_notice') {
+                $title = trim($_POST['n_title'] ?? '');
+                $date = trim($_POST['n_date'] ?? date('M d, Y'));
+                $description = trim($_POST['n_desc'] ?? '');
+                $important = isset($_POST['n_important']);
+
+                if (!empty($title)) {
+                    $new_id = 1;
+                    foreach (($json_data['notices'] ?? []) as $n) {
+                        if ($n['id'] >= $new_id) {
+                            $new_id = $n['id'] + 1;
+                        }
+                    }
+                    $json_data['notices'][] = [
+                        'id' => $new_id,
+                        'title' => $title,
+                        'date' => $date,
+                        'description' => $description,
+                        'important' => $important
+                    ];
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Notice '{$title}' added successfully!";
+                    } else {
+                        $error_msg = "Failed to save the notice.";
+                    }
+                } else {
+                    $error_msg = "Notice title cannot be empty.";
+                }
+            }
+
+            // ACTION 5: NOTICE BOARD - DELETE NOTICE
+            elseif (isset($_GET['action']) && $_GET['action'] === 'delete_notice') {
+                $id = intval($_GET['id'] ?? 0);
+                $found = false;
+                foreach (($json_data['notices'] ?? []) as $idx => $n) {
+                    if ($n['id'] === $id) {
+                        unset($json_data['notices'][$idx]);
+                        $json_data['notices'] = array_values($json_data['notices']);
+                        $found = true;
+                        break;
+                    }
+                }
+                if ($found) {
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Notice removed successfully.";
+                    } else {
+                        $error_msg = "Failed to update notices list.";
+                    }
+                }
+            }
+
+            // ACTION 6: FACULTY MEMBERS - ADD TEACHER
+            elseif (isset($_POST['action']) && $_POST['action'] === 'add_teacher') {
+                $t_name = trim($_POST['t_name'] ?? '');
+                $t_desg = trim($_POST['t_desg'] ?? '');
+                $t_qual = trim($_POST['t_qual'] ?? '');
+                $t_sub = trim($_POST['t_sub'] ?? '');
+                $t_exp = trim($_POST['t_exp'] ?? '');
+                $t_role = trim($_POST['t_role'] ?? '');
+
+                if (!empty($t_name)) {
+                    $new_id = 1;
+                    foreach (($json_data['teachers'] ?? []) as $t) {
+                        if ($t['id'] >= $new_id) {
+                            $new_id = $t['id'] + 1;
+                        }
+                    }
+                    $json_data['teachers'][] = [
+                        'id' => $new_id,
+                        'name' => $t_name,
+                        'designation' => $t_desg,
+                        'qualification' => $t_qual,
+                        'subject' => $t_sub,
+                        'experience' => $t_exp,
+                        'specialRole' => $t_role
+                    ];
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Faculty member '{$t_name}' added successfully!";
+                    } else {
+                        $error_msg = "Failed to save the teacher details.";
+                    }
+                } else {
+                    $error_msg = "Teacher name cannot be empty.";
+                }
+            }
+
+            // ACTION 7: FACULTY MEMBERS - DELETE TEACHER
+            elseif (isset($_GET['action']) && $_GET['action'] === 'delete_teacher') {
+                $id = intval($_GET['id'] ?? 0);
+                $found = false;
+                foreach (($json_data['teachers'] ?? []) as $idx => $t) {
+                    if ($t['id'] === $id) {
+                        unset($json_data['teachers'][$idx]);
+                        $json_data['teachers'] = array_values($json_data['teachers']);
+                        $found = true;
+                        break;
+                    }
+                }
+                if ($found) {
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Faculty member removed successfully.";
+                    } else {
+                        $error_msg = "Failed to update faculty list.";
+                    }
+                }
+            }
+
+            // ACTION 8: ACADEMIC DETAILS
+            elseif (isset($_POST['action']) && $_POST['action'] === 'update_academics') {
+                $json_data['academics']['curriculum'] = trim($_POST['a_curr'] ?? '');
+                $json_data['academics']['description'] = trim($_POST['a_desc'] ?? '');
+
+                $streams = explode(',', $_POST['a_streams'] ?? '');
+                $json_data['academics']['streams'] = array_map('trim', $streams);
+
+                // Update Academic Facilities (Science Labs, Computer/ATL, Library)
+                for ($i = 0; $i < 3; $i++) {
+                    if (isset($json_data['academics']['facilities'][$i])) {
+                        $json_data['academics']['facilities'][$i]['title'] = trim($_POST["fac_title_{$i}"] ?? '');
+                        $json_data['academics']['facilities'][$i]['description'] = trim($_POST["fac_desc_{$i}"] ?? '');
+                        
+                        // Handle facility image upload
+                        $json_data['academics']['facilities'][$i]['image'] = handleImageUpload("fac_img_{$i}", $json_data['academics']['facilities'][$i]['image']);
+                    }
+                }
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Academic details and facilities updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files.";
+                }
+            }
+
+            // ACTION 9: SPORTS & ACTIVITIES
+            elseif (isset($_POST['action']) && $_POST['action'] === 'update_activities') {
+                // Update Badminton, Boxing, Cricket
+                for ($i = 0; $i < 3; $i++) {
+                    if (isset($json_data['activities']['featured'][$i])) {
+                        $json_data['activities']['featured'][$i]['description'] = trim($_POST["act_desc_{$i}"] ?? '');
+                        $json_data['activities']['featured'][$i]['facilities'] = trim($_POST["act_fac_{$i}"] ?? '');
+                        $json_data['activities']['featured'][$i]['coaching'] = trim($_POST["act_coach_{$i}"] ?? '');
+                        $json_data['activities']['featured'][$i]['achievements'] = trim($_POST["act_ach_{$i}"] ?? '');
+                        $json_data['activities']['featured'][$i]['schedule'] = trim($_POST["act_sched_{$i}"] ?? '');
+
+                        // Handle activity image upload
+                        $json_data['activities']['featured'][$i]['image'] = handleImageUpload("act_img_{$i}", $json_data['activities']['featured'][$i]['image']);
+                    }
+                }
+
+                // Update other activities
+                for ($i = 0; $i < 6; $i++) {
+                    if (isset($json_data['activities']['other'][$i])) {
+                        $json_data['activities']['other'][$i]['description'] = trim($_POST["other_act_desc_{$i}"] ?? '');
+                    }
+                }
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Sports and extracurricular activities updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files.";
+                }
+            }
+
+            // ACTION 10: HOSTEL & RULES
+            elseif (isset($_POST['action']) && $_POST['action'] === 'update_hostel') {
+                $json_data['hostel']['overview'] = trim($_POST['h_overview'] ?? '');
+                $json_data['hostel']['capacity'] = intval($_POST['h_capacity'] ?? 100);
+
+                // Update Wardens
+                for ($i = 0; $i < 2; $i++) {
+                    if (isset($json_data['hostel']['wardens'][$i])) {
+                        $json_data['hostel']['wardens'][$i]['name'] = trim($_POST["w_name_{$i}"] ?? '');
+                        $json_data['hostel']['wardens'][$i]['designation'] = trim($_POST["w_desg_{$i}"] ?? '');
+                        $json_data['hostel']['wardens'][$i]['phone'] = trim($_POST["w_phone_{$i}"] ?? '');
+                    }
+                }
+
+                // Update Rules (dynamic array from POST)
+                $rules = $_POST['h_rules'] ?? [];
+                $clean_rules = [];
+                foreach ($rules as $r) {
+                    if (!empty(trim($r))) {
+                        $clean_rules[] = trim($r);
+                    }
+                }
+                $json_data['hostel']['rules'] = $clean_rules;
+
+                if (saveData($json_data, $data_file, $js_file)) {
+                    $success_msg = "Hostel details and rules updated successfully!";
+                } else {
+                    $error_msg = "Failed to write updates to data files.";
+                }
+            }
+
+            // ACTION 11: TESTIMONIALS - ADD
+            elseif (isset($_POST['action']) && $_POST['action'] === 'add_testimonial') {
+                $test_name = trim($_POST['tst_name'] ?? '');
+                $test_role = trim($_POST['tst_role'] ?? '');
+                $test_quote = trim($_POST['tst_quote'] ?? '');
+                $test_stars = intval($_POST['tst_stars'] ?? 5);
+
+                if (!empty($test_name)) {
+                    $json_data['testimonials'][] = [
+                        'name' => $test_name,
+                        'role' => $test_role,
+                        'quote' => $test_quote,
+                        'stars' => $test_stars
+                    ];
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Review from '{$test_name}' added successfully!";
+                    } else {
+                        $error_msg = "Failed to save review details.";
+                    }
+                } else {
+                    $error_msg = "Reviewer name cannot be empty.";
+                }
+            }
+
+            // ACTION 12: TESTIMONIALS - DELETE
+            elseif (isset($_GET['action']) && $_GET['action'] === 'delete_testimonial') {
+                $idx_to_del = intval($_GET['idx'] ?? -1);
+                if ($idx_to_del >= 0 && isset($json_data['testimonials'][$idx_to_del])) {
+                    unset($json_data['testimonials'][$idx_to_del]);
+                    $json_data['testimonials'] = array_values($json_data['testimonials']);
+                    if (saveData($json_data, $data_file, $js_file)) {
+                        $success_msg = "Review deleted successfully.";
+                    } else {
+                        $error_msg = "Failed to update review list.";
+                    }
+                }
+            }
+
+            // ACCESS KEY ACTIONS (Master Only)
+            elseif ($is_master && isset($_POST['action']) && $_POST['action'] === 'add_key') {
+                $new_key = trim($_POST['new_key'] ?? '');
+                $new_label = trim($_POST['new_label'] ?? 'Staff Key');
+
+                if (empty($new_key)) {
+                    $error_msg = "Access key cannot be empty.";
+                } elseif ($new_key === $MASTER_KEY || array_key_exists($new_key, $ACCESS_KEYS)) {
+                    $error_msg = "This access key already exists.";
+                } else {
+                    $ACCESS_KEYS[$new_key] = $new_label;
+                    $keys_content = "<?php\n"
+                                  . "if (!defined('SECURE_ACCESS')) die('Direct access forbidden');\n"
+                                  . "\$MASTER_KEY = " . var_export($MASTER_KEY, true) . ";\n"
+                                  . "\$ACCESS_KEYS = " . var_export($ACCESS_KEYS, true) . ";\n";
+                    if (file_put_contents($keys_file, $keys_content)) {
+                        $success_msg = "Access key '{$new_label}' added successfully!";
+                    } else {
+                        $error_msg = "Failed to save the new key.";
+                    }
+                }
+            }
+
+            elseif ($is_master && isset($_GET['action']) && $_GET['action'] === 'revoke_key') {
+                $key_to_revoke = trim($_GET['key'] ?? '');
+                if (array_key_exists($key_to_revoke, $ACCESS_KEYS)) {
+                    unset($ACCESS_KEYS[$key_to_revoke]);
+                    $keys_content = "<?php\n"
+                                  . "if (!defined('SECURE_ACCESS')) die('Direct access forbidden');\n"
+                                  . "\$MASTER_KEY = " . var_export($MASTER_KEY, true) . ";\n"
+                                  . "\$ACCESS_KEYS = " . var_export($ACCESS_KEYS, true) . ";\n";
+                    if (file_put_contents($keys_file, $keys_content)) {
+                        $success_msg = "Access key revoked successfully.";
+                    } else {
+                        $error_msg = "Failed to update keys.";
+                    }
+                }
+            }
+            
+        } catch (Exception $e) {
+            $error_msg = "Upload Error: " . $e->getMessage();
+        }
+
+        // Reload fresh data configuration for fields
+        $json_data = json_decode(file_get_contents($data_file), true);
+        
+        $school = $json_data['school'] ?? [];
+        $principal = $json_data['principal'] ?? [];
+        $teachers = $json_data['teachers'] ?? [];
+        $activities = $json_data['activities'] ?? [];
+        $hostel = $json_data['hostel'] ?? [];
+        $academics = $json_data['academics'] ?? [];
+        $statistics = $json_data['statistics'] ?? [];
+        $testimonials = $json_data['testimonials'] ?? [];
+        $images = $json_data['images'] ?? [];
+        $notices = $json_data['notices'] ?? [];
+    } else {
+        $error_msg = "Database file school-data.json not found.";
     }
 }
 ?>
@@ -144,7 +469,7 @@ if ($is_logged_in) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Admin Dashboard - Govt HSS Excellence</title>
+  <title>School CMS Dashboard - Govt HSS Excellence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -187,7 +512,6 @@ if ($is_logged_in) {
                         radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 45%);
     }
 
-    /* Header styling */
     header {
       background-color: var(--color-card-dark);
       border-bottom: 1px solid var(--color-border-dark);
@@ -282,16 +606,15 @@ if ($is_logged_in) {
       color: #ff4b4b;
     }
 
-    /* Main Container layout */
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       width: 100%;
       margin: 2rem auto;
       padding: 0 1.5rem;
       flex-grow: 1;
     }
 
-    /* Login Form styling */
+    /* Login Form */
     .login-wrapper {
       max-width: 420px;
       width: 100%;
@@ -344,27 +667,6 @@ if ($is_logged_in) {
       font-weight: 600;
       margin-bottom: 0.5rem;
       color: var(--color-white);
-      letter-spacing: 0.01em;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--color-text-muted);
-      display: flex;
-      align-items: center;
-      pointer-events: none;
-    }
-
-    .input-icon svg {
-      width: 1.2rem;
-      height: 1.2rem;
     }
 
     .form-input {
@@ -372,7 +674,7 @@ if ($is_logged_in) {
       background-color: rgba(35, 43, 43, 0.4);
       border: 1.5px solid var(--color-border-dark);
       border-radius: 0.6rem;
-      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      padding: 0.75rem 1.25rem;
       color: var(--color-white);
       font-family: var(--font-family);
       font-size: 0.95rem;
@@ -384,6 +686,36 @@ if ($is_logged_in) {
       border-color: var(--color-green);
       background-color: rgba(35, 43, 43, 0.6);
       box-shadow: 0 0 0 3px rgba(13, 94, 58, 0.25);
+    }
+
+    textarea.form-input {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Helper for files */
+    .file-input-wrapper {
+      position: relative;
+      margin-top: 0.25rem;
+    }
+
+    .current-image-preview {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--color-border-dark);
+    }
+
+    .current-image-preview img {
+      width: 50px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 0.25rem;
+      border: 1px solid #444;
     }
 
     .btn-submit {
@@ -407,14 +739,18 @@ if ($is_logged_in) {
     .btn-submit:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(13, 94, 58, 0.45);
-      background: linear-gradient(135deg, var(--color-green-light) 0%, var(--color-green) 100%);
     }
 
-    .btn-submit:active {
-      transform: translateY(0);
+    .btn-danger {
+      background: #ff4b4b;
+      color: #fff;
     }
 
-    /* Notification Alert styling */
+    .btn-danger:hover {
+      background: #e03b3b;
+    }
+
+    /* Notification Alerts */
     .alert {
       padding: 1rem 1.25rem;
       border-radius: 0.6rem;
@@ -444,14 +780,14 @@ if ($is_logged_in) {
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* Dashboard Layout styling */
+    /* Dashboard Layout */
     .dashboard-layout {
       display: grid;
       grid-template-cols: 280px 1fr;
       gap: 2rem;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 992px) {
       .dashboard-layout {
         grid-template-cols: 1fr;
       }
@@ -461,14 +797,14 @@ if ($is_logged_in) {
     .sidebar {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
     .nav-tab {
       background-color: var(--color-card-dark);
       border: 1px solid var(--color-border-dark);
       color: var(--color-text-muted);
-      padding: 1rem 1.25rem;
+      padding: 0.85rem 1.15rem;
       border-radius: 0.75rem;
       font-weight: 600;
       text-align: left;
@@ -477,6 +813,7 @@ if ($is_logged_in) {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      font-size: 0.9rem;
     }
 
     .nav-tab:hover {
@@ -489,20 +826,9 @@ if ($is_logged_in) {
       color: var(--color-white);
       border-color: var(--color-green);
       background-color: rgba(13, 94, 58, 0.15);
-      position: relative;
     }
 
-    .nav-tab.active::after {
-      content: '';
-      position: absolute;
-      right: 1.25rem;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--color-gold);
-    }
-
-    /* Content Area styling */
+    /* Content Area */
     .content-area {
       background-color: var(--color-card-dark);
       border: 1px solid var(--color-border-dark);
@@ -559,49 +885,78 @@ if ($is_logged_in) {
     }
 
     .form-section-header {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--color-gold);
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px dashed var(--color-border-dark);
+      padding-bottom: 0.25rem;
     }
 
-    /* Access Key Management Panel */
-    .key-generator-box {
-      background-color: rgba(212, 175, 55, 0.05);
-      border: 1px dashed var(--color-gold);
-      padding: 1.5rem;
+    /* Manage Dynamic Lists */
+    .list-manager-box {
+      background-color: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--color-border-dark);
       border-radius: 0.75rem;
-      margin-bottom: 2.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    .generator-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--color-gold-light);
-      margin-bottom: 0.5rem;
-    }
-
-    .generator-desc {
-      color: var(--color-text-muted);
-      font-size: 0.825rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .gen-actions {
+    .list-item-card {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--color-border-dark);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 1rem;
-      align-items: flex-end;
     }
 
-    @media (max-width: 600px) {
-      .gen-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
+    .list-item-info {
+      flex-grow: 1;
+    }
+
+    .list-item-title {
+      font-weight: 700;
+      color: var(--color-white);
+    }
+
+    .list-item-subtitle {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .btn-icon-danger {
+      background-color: rgba(255, 75, 75, 0.1);
+      border: 1px solid rgba(255, 75, 75, 0.3);
+      color: #ff7272;
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .btn-icon-danger:hover {
+      background-color: #ff4b4b;
+      color: #fff;
+    }
+
+    /* Dynamic Rules list */
+    .rules-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .rule-row {
+      display: flex;
+      gap: 0.5rem;
     }
 
     .btn-secondary {
@@ -614,15 +969,13 @@ if ($is_logged_in) {
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
-      white-space: nowrap;
     }
 
     .btn-secondary:hover {
       background-color: rgba(212, 175, 55, 0.2);
-      transform: translateY(-1px);
     }
 
-    /* Key List Table styling */
+    /* Keys Table */
     .key-table-wrapper {
       overflow-x: auto;
       border: 1px solid var(--color-border-dark);
@@ -639,19 +992,13 @@ if ($is_logged_in) {
     .key-table th {
       background-color: rgba(35, 43, 43, 0.5);
       color: var(--color-white);
-      font-weight: 700;
       padding: 0.75rem 1.25rem;
       border-bottom: 1px solid var(--color-border-dark);
     }
 
     .key-table td {
-      padding: 1rem 1.25rem;
+      padding: 0.75rem 1.25rem;
       border-bottom: 1px solid var(--color-border-dark);
-      vertical-align: middle;
-    }
-
-    .key-table tr:last-child td {
-      border-bottom: none;
     }
 
     .key-code {
@@ -662,29 +1009,6 @@ if ($is_logged_in) {
       color: var(--color-gold-light);
     }
 
-    .btn-revoke {
-      background-color: rgba(255, 75, 75, 0.15);
-      border: 1px solid rgba(255, 75, 75, 0.3);
-      color: #ff7272;
-      padding: 0.4rem 0.8rem;
-      border-radius: 0.4rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .btn-revoke:hover {
-      background-color: #ff4b4b;
-      color: var(--color-white);
-      border-color: #ff4b4b;
-    }
-
-    /* Footer */
     footer {
       text-align: center;
       padding: 2rem;
@@ -698,7 +1022,6 @@ if ($is_logged_in) {
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="brand">
       <div class="brand-logo">
@@ -707,8 +1030,8 @@ if ($is_logged_in) {
         </svg>
       </div>
       <div>
-        <h1 class="brand-title">Govt. HSS Excellence</h1>
-        <p class="brand-subtitle">School Administration Hub</p>
+        <h1 class="brand-title">School CMS Hub</h1>
+        <p class="brand-subtitle">Update Website Content & Settings</p>
       </div>
     </div>
     
@@ -718,7 +1041,6 @@ if ($is_logged_in) {
           <?php echo $is_master ? 'Master Access' : 'Staff Access'; ?>
         </span>
         <a href="admin.php?action=logout" class="btn-logout">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
           Logout
         </a>
       </div>
@@ -732,12 +1054,11 @@ if ($is_logged_in) {
       <!-- LOGIN VIEW -->
       <div class="login-wrapper">
         <div class="card">
-          <h2 class="card-title">Access Administration</h2>
-          <p class="card-desc">Please enter your access key to manage details</p>
+          <h2 class="card-title">School CMS Login</h2>
+          <p class="card-desc">Enter your access key to modify school content</p>
           
           <?php if (!empty($error_msg)): ?>
             <div class="alert alert-error">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <?php echo htmlspecialchars($error_msg); ?>
             </div>
           <?php endif; ?>
@@ -746,15 +1067,10 @@ if ($is_logged_in) {
             <input type="hidden" name="action" value="login" />
             <div class="form-group">
               <label for="access_key" class="form-label">Access Key</label>
-              <div class="input-wrapper">
-                <span class="input-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </span>
-                <input type="password" id="access_key" name="access_key" class="form-input" placeholder="••••••••••••••••" required />
-              </div>
+              <input type="password" id="access_key" name="access_key" class="form-input" placeholder="••••••••••••••••" required />
             </div>
             <button type="submit" class="btn-submit">
-              Sign In
+              Access CMS Dashboard
             </button>
           </form>
         </div>
@@ -766,166 +1082,607 @@ if ($is_logged_in) {
       
       <?php if (!empty($error_msg)): ?>
         <div class="alert alert-error">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <?php echo htmlspecialchars($error_msg); ?>
         </div>
       <?php endif; ?>
 
       <?php if (!empty($success_msg)): ?>
         <div class="alert alert-success">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <?php echo htmlspecialchars($success_msg); ?>
         </div>
       <?php endif; ?>
 
       <div class="dashboard-layout">
         
-        <!-- Sidebar Tabs -->
+        <!-- Sidebar Navigation Tabs -->
         <div class="sidebar">
-          <button class="nav-tab active" onclick="switchTab('contact-tab', this)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            Contact Info
-          </button>
+          <button class="nav-tab active" onclick="switchTab('general-tab', this)">General & Stats</button>
+          <button class="nav-tab" onclick="switchTab('principal-tab', this)">Principal Desk</button>
+          <button class="nav-tab" onclick="switchTab('contact-tab', this)">Contact Details</button>
+          <button class="nav-tab" onclick="switchTab('academics-tab', this)">Academic streams</button>
+          <button class="nav-tab" onclick="switchTab('activities-tab', this)">Activities & Sports</button>
+          <button class="nav-tab" onclick="switchTab('hostel-tab', this)">Hostel & Rules</button>
+          <button class="nav-tab" onclick="switchTab('notices-tab', this)">Circulars & Notices</button>
+          <button class="nav-tab" onclick="switchTab('teachers-tab', this)">Faculty List</button>
+          <button class="nav-tab" onclick="switchTab('testimonials-tab', this)">Reviews / Alumni</button>
           
           <?php if ($is_master): ?>
-            <button class="nav-tab" onclick="switchTab('keys-tab', this)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L20 4m0 0h2v2"></path></svg>
-              Manage Access Keys
-            </button>
+            <button class="nav-tab" style="border-color: var(--color-gold);" onclick="switchTab('keys-tab', this)">Manage Access Keys</button>
           <?php endif; ?>
         </div>
         
-        <!-- Main Content Panel -->
+        <!-- Main Form Panel -->
         <div class="content-area">
           
-          <!-- TAB 1: CONTACT INFO -->
-          <div id="contact-tab" class="tab-content active">
-            <h2 class="section-title">Update Contact & Location Details</h2>
-            <p class="section-desc">Change the contact details displayed across the website footer and contact page.</p>
+          <!-- TAB 1: GENERAL INFO & STATS -->
+          <div id="general-tab" class="tab-content active">
+            <h2 class="section-title">General Settings & Statistics</h2>
+            <p class="section-desc">Manage school name, medium, registration codes, hero image, and counters.</p>
+            
+            <form action="admin.php" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="action" value="update_general" />
+              
+              <div class="form-grid">
+                <div class="form-group grid-full">
+                  <label class="form-label" for="fullName">School Full Name</label>
+                  <input type="text" id="fullName" name="fullName" class="form-input" value="<?php echo htmlspecialchars($school['fullName'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="shortName">Short Display Name</label>
+                  <input type="text" id="shortName" name="shortName" class="form-input" value="<?php echo htmlspecialchars($school['shortName'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="establishedYear">Established Year</label>
+                  <input type="number" id="establishedYear" name="establishedYear" class="form-input" value="<?php echo intval($school['establishedYear'] ?? 2002); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="type">School Type</label>
+                  <input type="text" id="type" name="type" class="form-input" value="<?php echo htmlspecialchars($school['type'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="board">Affiliation Board</label>
+                  <input type="text" id="board" name="board" class="form-input" value="<?php echo htmlspecialchars($school['board'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="udiseCode">UDISE Code</label>
+                  <input type="text" id="udiseCode" name="udiseCode" class="form-input" value="<?php echo htmlspecialchars($school['udiseCode'] ?? ''); ?>" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="medium">Medium of Instruction</label>
+                  <input type="text" id="medium" name="medium" class="form-input" value="<?php echo htmlspecialchars($school['medium'] ?? ''); ?>" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="grades">Classes / Grades Offered</label>
+                  <input type="text" id="grades" name="grades" class="form-input" value="<?php echo htmlspecialchars($school['grades'] ?? ''); ?>" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="department">Department</label>
+                  <input type="text" id="department" name="department" class="form-input" value="<?php echo htmlspecialchars($school['department'] ?? ''); ?>" />
+                </div>
+                
+                <div class="form-group grid-full">
+                  <label class="form-label" for="hero_img">Replace Hero Background Image</label>
+                  <input type="file" id="hero_img" name="hero_img" class="form-input" accept="image/*" />
+                  <div class="current-image-preview">
+                    <img src="<?php echo htmlspecialchars($images['hero'] ?? ''); ?>" alt="Hero" />
+                    <span>Current: <?php echo htmlspecialchars($images['hero'] ?? ''); ?></span>
+                  </div>
+                </div>
+              </div>
+              
+              <h3 class="form-section-header">Statistics Numbers</h3>
+              <div class="form-grid">
+                <?php for ($i = 0; $i < 4; $i++): $stat = $statistics[$i] ?? ['value'=>0,'suffix'=>'','label'=>'']; ?>
+                  <div class="form-group" style="grid-column: span 1">
+                    <label class="form-label">Stat Card <?php echo $i+1; ?> Label</label>
+                    <input type="text" name="stat_lab_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($stat['label']); ?>" required />
+                  </div>
+                  <div class="form-group" style="grid-column: span 1">
+                    <label class="form-label">Stat Card <?php echo $i+1; ?> Value & Suffix</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <input type="number" name="stat_val_<?php echo $i; ?>" class="form-input" style="width: 60%" value="<?php echo intval($stat['value']); ?>" required />
+                      <input type="text" name="stat_suf_<?php echo $i; ?>" class="form-input" style="width: 40%" placeholder="e.g. +, %" value="<?php echo htmlspecialchars($stat['suffix']); ?>" />
+                    </div>
+                  </div>
+                <?php endfor; ?>
+              </div>
+              
+              <button type="submit" class="btn-submit">Save Settings & Stats</button>
+            </form>
+          </div>
+          
+          <!-- TAB 2: PRINCIPAL MESSAGE -->
+          <div id="principal-tab" class="tab-content">
+            <h2 class="section-title">Principal Desk Settings</h2>
+            <p class="section-desc">Edit details about the school principal, including credential, statement, vision, and profile picture.</p>
+            
+            <form action="admin.php" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="action" value="update_principal" />
+              
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="p_name">Principal Name</label>
+                  <input type="text" id="p_name" name="p_name" class="form-input" value="<?php echo htmlspecialchars($principal['name'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="p_qual">Qualifications</label>
+                  <input type="text" id="p_qual" name="p_qual" class="form-input" value="<?php echo htmlspecialchars($principal['qualification'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group grid-full">
+                  <label class="form-label" for="p_exp">Total Experience</label>
+                  <input type="text" id="p_exp" name="p_exp" class="form-input" value="<?php echo htmlspecialchars($principal['experience'] ?? ''); ?>" />
+                </div>
+                
+                <div class="form-group grid-full">
+                  <label class="form-label" for="principal_photo">Replace Principal Profile Photo</label>
+                  <input type="file" id="principal_photo" name="principal_photo" class="form-input" accept="image/*" />
+                  <div class="current-image-preview">
+                    <img src="<?php echo htmlspecialchars($images['principal'] ?? ''); ?>" alt="Principal" />
+                    <span>Current: <?php echo htmlspecialchars($images['principal'] ?? ''); ?></span>
+                  </div>
+                </div>
+
+                <div class="form-group grid-full">
+                  <label class="form-label" for="p_msg">From Principal's Desk (Full Statement Message)</label>
+                  <textarea id="p_msg" name="p_msg" class="form-input" required><?php echo htmlspecialchars($principal['message'] ?? ''); ?></textarea>
+                </div>
+                <div class="form-group grid-full">
+                  <label class="form-label" for="p_vision">School Vision</label>
+                  <textarea id="p_vision" name="p_vision" class="form-input" required><?php echo htmlspecialchars($principal['vision'] ?? ''); ?></textarea>
+                </div>
+                <div class="form-group grid-full">
+                  <label class="form-label" for="p_mission">School Mission</label>
+                  <textarea id="p_mission" name="p_mission" class="form-input" required><?php echo htmlspecialchars($principal['mission'] ?? ''); ?></textarea>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn-submit">Save Principal Message</button>
+            </form>
+          </div>
+          
+          <!-- TAB 3: CONTACT DETAILS -->
+          <div id="contact-tab" class="tab-content">
+            <h2 class="section-title">Communication & Address Info</h2>
+            <p class="section-desc">Edit contact channels, social networks, and postal coordinates.</p>
             
             <form action="admin.php" method="POST">
               <input type="hidden" name="action" value="update_contact" />
               
-              <!-- Contact Details Section -->
-              <h3 class="form-section-header">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Communication Details
-              </h3>
-              
+              <h3 class="form-section-header">Contact Channels</h3>
               <div class="form-grid">
                 <div class="form-group">
                   <label class="form-label" for="phone">Phone Number</label>
-                  <input type="text" id="phone" name="phone" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($contact['phone']); ?>" required />
+                  <input type="text" id="phone" name="phone" class="form-input" value="<?php echo htmlspecialchars($school['contact']['phone'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="email">Email Address</label>
-                  <input type="email" id="email" name="email" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($contact['email']); ?>" required />
+                  <label class="form-label" for="email">Contact Form Email Receiver</label>
+                  <input type="email" id="email" name="email" class="form-input" value="<?php echo htmlspecialchars($school['contact']['email'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group grid-full">
-                  <label class="form-label" for="officeHours">Office / Visiting Hours</label>
-                  <input type="text" id="officeHours" name="officeHours" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($contact['officeHours']); ?>" required />
+                  <label class="form-label" for="officeHours">Visiting/Office Hours</label>
+                  <input type="text" id="officeHours" name="officeHours" class="form-input" value="<?php echo htmlspecialchars($school['contact']['officeHours'] ?? ''); ?>" required />
                 </div>
               </div>
 
-              <!-- Address Details Section -->
-              <h3 class="form-section-header">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                Postal Address
-              </h3>
-              
+              <h3 class="form-section-header">Location Details</h3>
               <div class="form-grid">
                 <div class="form-group grid-full">
-                  <label class="form-label" for="street">Street Address</label>
-                  <input type="text" id="street" name="street" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($address['street']); ?>" required />
+                  <label class="form-label" for="street">Street Line</label>
+                  <input type="text" id="street" name="street" class="form-input" value="<?php echo htmlspecialchars($school['address']['street'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="area">Area / Locality</label>
-                  <input type="text" id="area" name="area" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($address['area']); ?>" required />
+                  <input type="text" id="area" name="area" class="form-input" value="<?php echo htmlspecialchars($school['address']['area'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="city">City</label>
-                  <input type="text" id="city" name="city" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($address['city']); ?>" required />
+                  <input type="text" id="city" name="city" class="form-input" value="<?php echo htmlspecialchars($school['address']['city'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="state">State</label>
-                  <input type="text" id="state" name="state" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($address['state']); ?>" required />
+                  <input type="text" id="state" name="state" class="form-input" value="<?php echo htmlspecialchars($school['address']['state'] ?? ''); ?>" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="pincode">Pincode</label>
-                  <input type="text" id="pincode" name="pincode" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($address['pincode']); ?>" required />
+                  <input type="text" id="pincode" name="pincode" class="form-input" value="<?php echo htmlspecialchars($school['address']['pincode'] ?? ''); ?>" required />
                 </div>
               </div>
 
-              <!-- Social Links Section -->
-              <h3 class="form-section-header">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                Social Media Links
-              </h3>
-              
+              <h3 class="form-section-header">Social Media URLs</h3>
               <div class="form-grid">
                 <div class="form-group">
-                  <label class="form-label" for="facebook">Facebook URL</label>
-                  <input type="url" id="facebook" name="facebook" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($social['facebook']); ?>" />
+                  <label class="form-label" for="facebook">Facebook Link</label>
+                  <input type="url" id="facebook" name="facebook" class="form-input" value="<?php echo htmlspecialchars($school['social']['facebook'] ?? ''); ?>" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="instagram">Instagram URL</label>
-                  <input type="url" id="instagram" name="instagram" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($social['instagram']); ?>" />
+                  <label class="form-label" for="instagram">Instagram Link</label>
+                  <input type="url" id="instagram" name="instagram" class="form-input" value="<?php echo htmlspecialchars($school['social']['instagram'] ?? ''); ?>" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="linkedin">LinkedIn URL</label>
-                  <input type="url" id="linkedin" name="linkedin" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($social['linkedin']); ?>" />
+                  <label class="form-label" for="linkedin">LinkedIn Link</label>
+                  <input type="url" id="linkedin" name="linkedin" class="form-input" value="<?php echo htmlspecialchars($school['social']['linkedin'] ?? ''); ?>" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="youtube">YouTube Video URL</label>
-                  <input type="url" id="youtube" name="youtube" class="form-input" style="padding-left: 1.25rem" value="<?php echo htmlspecialchars($social['youtube']); ?>" />
+                  <label class="form-label" for="youtube">YouTube Video Link</label>
+                  <input type="url" id="youtube" name="youtube" class="form-input" value="<?php echo htmlspecialchars($school['social']['youtube'] ?? ''); ?>" />
                 </div>
               </div>
 
-              <button type="submit" class="btn-submit">
-                Save Contact Details
-              </button>
+              <button type="submit" class="btn-submit">Save Contact Details</button>
             </form>
           </div>
           
-          <?php if ($is_master): ?>
-            <!-- TAB 2: ACCESS KEYS -->
-            <div id="keys-tab" class="tab-content">
-              <h2 class="section-title">Manage Access Keys</h2>
-              <p class="section-desc">Generate new staff keys to share access, or revoke keys to deny access instantly.</p>
+          <!-- TAB 4: ACADEMIC DETAILS -->
+          <div id="academics-tab" class="tab-content">
+            <h2 class="section-title">Academic Streams & Facilities</h2>
+            <p class="section-desc">Manage your course curriculum, active academic streams, and educational facility cards.</p>
+            
+            <form action="admin.php" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="action" value="update_academics" />
               
-              <!-- Generator Box -->
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="a_curr">Curriculum Board</label>
+                  <input type="text" id="a_curr" name="a_curr" class="form-input" value="<?php echo htmlspecialchars($academics['curriculum'] ?? ''); ?>" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="a_streams">Academic Streams Offered (Comma separated)</label>
+                  <input type="text" id="a_streams" name="a_streams" class="form-input" value="<?php echo htmlspecialchars(implode(', ', $academics['streams'] ?? [])); ?>" required />
+                </div>
+                <div class="form-group grid-full">
+                  <label class="form-label" for="a_desc">Academics Section Overview Description</label>
+                  <textarea id="a_desc" name="a_desc" class="form-input" required><?php echo htmlspecialchars($academics['description'] ?? ''); ?></textarea>
+                </div>
+              </div>
+
+              <!-- Academic Facilities loop -->
+              <?php for ($i = 0; $i < 3; $i++): $fac = $academics['facilities'][$i] ?? ['title'=>'','description'=>'','image'=>'']; ?>
+                <h3 class="form-section-header">Academic Facility Card <?php echo $i+1; ?></h3>
+                <div class="form-grid">
+                  <div class="form-group grid-full">
+                    <label class="form-label">Facility Title</label>
+                    <input type="text" name="fac_title_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($fac['title']); ?>" required />
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label">Facility Description</label>
+                    <textarea name="fac_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($fac['description']); ?></textarea>
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label">Replace Facility Image</label>
+                    <input type="file" name="fac_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
+                    <div class="current-image-preview">
+                      <img src="<?php echo htmlspecialchars($fac['image']); ?>" alt="Facility" />
+                      <span>Current: <?php echo htmlspecialchars($fac['image']); ?></span>
+                    </div>
+                  </div>
+                </div>
+              <?php endfor; ?>
+              
+              <button type="submit" class="btn-submit">Save Academic Details</button>
+            </form>
+          </div>
+          
+          <!-- TAB 5: SPORTS & ACTIVITIES -->
+          <div id="activities-tab" class="tab-content">
+            <h2 class="section-title">Sports & Extracurricular Activities</h2>
+            <p class="section-desc">Edit training descriptions, facilities, and replacement photos for sport and activity programs.</p>
+            
+            <form action="admin.php" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="action" value="update_activities" />
+              
+              <!-- Featured Activities Loop (Badminton, Boxing, Cricket) -->
+              <?php for ($i = 0; $i < 3; $i++): $act = $activities['featured'][$i] ?? ['title'=>'','description'=>'','facilities'=>'','coaching'=>'','achievements'=>'','schedule'=>'','image'=>'']; ?>
+                <h3 class="form-section-header">Featured Sport: <?php echo htmlspecialchars($act['title']); ?></h3>
+                <div class="form-grid">
+                  <div class="form-group grid-full">
+                    <label class="form-label">Overview Description</label>
+                    <textarea name="act_desc_<?php echo $i; ?>" class="form-input" required><?php echo htmlspecialchars($act['description']); ?></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Court / Ring / Pitch Facilities</label>
+                    <input type="text" name="act_fac_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['facilities']); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Coaching Details</label>
+                    <input type="text" name="act_coach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['coaching']); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Key Sport Achievements</label>
+                    <input type="text" name="act_ach_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['achievements']); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Training Schedule</label>
+                    <input type="text" name="act_sched_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($act['schedule']); ?>" required />
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label">Replace Sport Image</label>
+                    <input type="file" name="act_img_<?php echo $i; ?>" class="form-input" accept="image/*" />
+                    <div class="current-image-preview">
+                      <img src="<?php echo htmlspecialchars($act['image']); ?>" alt="Sport" />
+                      <span>Current: <?php echo htmlspecialchars($act['image']); ?></span>
+                    </div>
+                  </div>
+                </div>
+              <?php endfor; ?>
+
+              <!-- Other Activities Descriptions -->
+              <h3 class="form-section-header">Other Activities (Quick descriptions)</h3>
+              <div class="form-grid">
+                <?php for ($i = 0; $i < 6; $i++): $oth = $activities['other'][$i] ?? ['title'=>'','description'=>'']; ?>
+                  <div class="form-group grid-full">
+                    <label class="form-label"><?php echo htmlspecialchars($oth['title']); ?> Description</label>
+                    <textarea name="other_act_desc_<?php echo $i; ?>" class="form-input" style="min-height: 70px" required><?php echo htmlspecialchars($oth['description']); ?></textarea>
+                  </div>
+                <?php endfor; ?>
+              </div>
+              
+              <button type="submit" class="btn-submit">Save Activities Details</button>
+            </form>
+          </div>
+          
+          <!-- TAB 6: HOSTEL & RULES -->
+          <div id="hostel-tab" class="tab-content">
+            <h2 class="section-title">Hostel, Mess & Safety Rules</h2>
+            <p class="section-desc">Manage boarding capacity, wardens contact info, features, and regulatory guidelines.</p>
+            
+            <form action="admin.php" method="POST">
+              <input type="hidden" name="action" value="update_hostel" />
+              
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="h_capacity">Hostel Boarding Capacity</label>
+                  <input type="number" id="h_capacity" name="h_capacity" class="form-input" value="<?php echo intval($hostel['capacity'] ?? 100); ?>" required />
+                </div>
+                <div class="form-group grid-full">
+                  <label class="form-label" for="h_overview">Hostel overview text</label>
+                  <textarea id="h_overview" name="h_overview" class="form-input" required><?php echo htmlspecialchars($hostel['overview'] ?? ''); ?></textarea>
+                </div>
+              </div>
+
+              <!-- Wardens -->
+              <?php for ($i = 0; $i < 2; $i++): $war = $hostel['wardens'][$i] ?? ['name'=>'','designation'=>'','phone'=>'']; ?>
+                <h3 class="form-section-header">Hostel Warden <?php echo $i+1; ?> Details</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Warden Name</label>
+                    <input type="text" name="w_name_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['name']); ?>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Designation / Rank</label>
+                    <input type="text" name="w_desg_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['designation']); ?>" required />
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label">Contact Phone</label>
+                    <input type="text" name="w_phone_<?php echo $i; ?>" class="form-input" value="<?php echo htmlspecialchars($war['phone']); ?>" required />
+                  </div>
+                </div>
+              <?php endfor; ?>
+
+              <!-- Rules Management -->
+              <h3 class="form-section-header">Hostel Rules & Regulations</h3>
+              <p class="generator-desc" style="margin-top: -0.5rem; margin-bottom: 1rem;">Add or remove boarding rules. Empty lines are automatically ignored.</p>
+              
+              <div class="rules-container" id="rules-box">
+                <?php foreach (($hostel['rules'] ?? []) as $r): ?>
+                  <div class="rule-row">
+                    <input type="text" name="h_rules[]" class="form-input" value="<?php echo htmlspecialchars($r); ?>" />
+                    <button type="button" class="btn-icon-danger" onclick="this.parentElement.remove()">Remove</button>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+              <button type="button" class="btn-secondary" style="margin-bottom: 2rem;" onclick="addNewRuleRow()">+ Add New Rule</button>
+              
+              <button type="submit" class="btn-submit">Save Hostel Details & Rules</button>
+            </form>
+          </div>
+          
+          <!-- TAB 7: CIRCULARS & NOTICES -->
+          <div id="notices-tab" class="tab-content">
+            <h2 class="section-title">School Circulars & Notices</h2>
+            <p class="section-desc">Broadcast official updates, schedules, timetables, and academic circulars to students.</p>
+            
+            <!-- List current notices -->
+            <h3 class="form-section-header">Active Circulars & Notices</h3>
+            <div class="list-manager-box">
+              <?php if (empty($notices)): ?>
+                <p style="color: var(--color-text-muted); text-align: center;">No active circulars or notices posted.</p>
+              <?php else: ?>
+                <?php foreach ($notices as $n): ?>
+                  <div class="list-item-card">
+                    <div class="list-item-info">
+                      <div class="list-item-title">
+                        <?php echo htmlspecialchars($n['title']); ?>
+                        <?php if (!empty($n['important'])): ?><span class="role-badge" style="font-size:0.65rem; padding: 0.1rem 0.4rem; background:rgba(255,75,75,0.1); border-color:#ff4b4b; color:#ff7272; margin-left:0.5rem">Important</span><?php endif; ?>
+                      </div>
+                      <div class="list-item-subtitle"><?php echo htmlspecialchars($n['date']); ?> — <?php echo htmlspecialchars($n['description'] ?? ''); ?></div>
+                    </div>
+                    <a href="admin.php?action=delete_notice&id=<?php echo $n['id']; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to delete this notice?');">Delete</a>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+
+            <!-- Add new notice -->
+            <div class="key-generator-box">
+              <h3 class="generator-title">Publish New Circular / Notice</h3>
+              <form action="admin.php" method="POST">
+                <input type="hidden" name="action" value="add_notice" />
+                <div class="form-grid">
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="n_title">Title (Circular/Notice)</label>
+                    <input type="text" id="n_title" name="n_title" class="form-input" placeholder="e.g. Quarterly Exam Schedule 2026 or Admission open notice" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="n_date">Posting Date</label>
+                    <input type="text" id="n_date" name="n_date" class="form-input" value="<?php echo date('M d, Y'); ?>" required />
+                  </div>
+                  <div class="form-group" style="display:flex; align-items:center; height:100%; margin-bottom:0; padding-top:1.5rem">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                      <input type="checkbox" id="n_important" name="n_important" style="width: 18px; height: 18px;" />
+                      <span class="form-label" style="margin-bottom:0">Mark as Critical / Important</span>
+                    </label>
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="n_desc">Body Description / Content</label>
+                    <textarea id="n_desc" name="n_desc" class="form-input" placeholder="Enter notice/circular body text..." required></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn-submit">Publish Circular & Notice</button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- TAB 8: FACULTY LIST -->
+          <div id="teachers-tab" class="tab-content">
+            <h2 class="section-title">Manage Faculty & Teachers</h2>
+            <p class="section-desc">Add or remove teachers, administrative coordinators, and coaches from the website profile directory.</p>
+            
+            <!-- List current teachers -->
+            <h3 class="form-section-header">Current Faculty Members</h3>
+            <div class="list-manager-box">
+              <?php if (empty($teachers)): ?>
+                <p style="color: var(--color-text-muted); text-align: center;">No teachers registered in the list.</p>
+              <?php else: ?>
+                <?php foreach ($teachers as $t): ?>
+                  <div class="list-item-card">
+                    <div class="list-item-info">
+                      <div class="list-item-title"><?php echo htmlspecialchars($t['name']); ?></div>
+                      <div class="list-item-subtitle"><?php echo htmlspecialchars($t['designation']); ?> (<?php echo htmlspecialchars($t['subject']); ?>) — <?php echo htmlspecialchars($t['experience']); ?> Exp</div>
+                    </div>
+                    <a href="admin.php?action=delete_teacher&id=<?php echo $t['id']; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this faculty member?');">Remove</a>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+
+            <!-- Add new teacher -->
+            <div class="key-generator-box">
+              <h3 class="generator-title">Add Faculty Member</h3>
+              <form action="admin.php" method="POST">
+                <input type="hidden" name="action" value="add_teacher" />
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="t_name">Teacher Name</label>
+                    <input type="text" id="t_name" name="t_name" class="form-input" placeholder="e.g. Smt. Preeti Jain" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="t_desg">Designation</label>
+                    <input type="text" id="t_desg" name="t_desg" class="form-input" placeholder="e.g. HOD Mathematics" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="t_qual">Academic Credentials</label>
+                    <input type="text" id="t_qual" name="t_qual" class="form-input" placeholder="e.g. M.Sc. (Maths), B.Ed." required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="t_sub">Primary Subject taught</label>
+                    <input type="text" id="t_sub" name="t_sub" class="form-input" placeholder="e.g. Mathematics" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="t_exp">Teaching Experience</label>
+                    <input type="text" id="t_exp" name="t_exp" class="form-input" placeholder="e.g. 18 years" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="t_role">Special Role / In-charge</label>
+                    <input type="text" id="t_role" name="t_role" class="form-input" placeholder="e.g. Math Lab Coordinator" />
+                  </div>
+                </div>
+                <button type="submit" class="btn-submit">Register Faculty Member</button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- TAB 9: TESTIMONIALS -->
+          <div id="testimonials-tab" class="tab-content">
+            <h2 class="section-title">Manage Reviews & Alumni Feedback</h2>
+            <p class="section-desc">Broadcast parent comments, student achievements, and alumni feedback.</p>
+            
+            <!-- List current testimonials -->
+            <h3 class="form-section-header">Active Website Reviews</h3>
+            <div class="list-manager-box">
+              <?php if (empty($testimonials)): ?>
+                <p style="color: var(--color-text-muted); text-align: center;">No testimonials loaded on the site.</p>
+              <?php else: ?>
+                <?php foreach ($testimonials as $idx => $tst): ?>
+                  <div class="list-item-card">
+                    <div class="list-item-info">
+                      <div class="list-item-title"><?php echo htmlspecialchars($tst['name']); ?> (<?php echo htmlspecialchars($tst['role']); ?>) — <?php echo str_repeat('★', intval($tst['stars'])); ?></div>
+                      <div class="list-item-subtitle">"<?php echo htmlspecialchars($tst['quote']); ?>"</div>
+                    </div>
+                    <a href="admin.php?action=delete_testimonial&idx=<?php echo $idx; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this review?');">Delete</a>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+
+            <!-- Add new testimonial -->
+            <div class="key-generator-box">
+              <h3 class="generator-title">Add Website Review</h3>
+              <form action="admin.php" method="POST">
+                <input type="hidden" name="action" value="add_testimonial" />
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="tst_name">Reviewer Name</label>
+                    <input type="text" id="tst_name" name="tst_name" class="form-input" placeholder="e.g. Rajesh Kumar Verma" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="tst_role">Relationship / Role</label>
+                    <input type="text" id="tst_role" name="tst_role" class="form-input" placeholder="e.g. Parent, Class XII Alumni" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="tst_stars">Rating Stars (1-5)</label>
+                    <select id="tst_stars" name="tst_stars" class="form-input">
+                      <option value="5">5 Stars (Excellent)</option>
+                      <option value="4">4 Stars (Good)</option>
+                      <option value="3">3 Stars (Average)</option>
+                    </select>
+                  </div>
+                  <div class="form-group grid-full">
+                    <label class="form-label" for="tst_quote">Review Quote Statement</label>
+                    <textarea id="tst_quote" name="tst_quote" class="form-input" placeholder="Enter student/parent review feedback quote..." required></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn-submit">Submit Website Review</button>
+              </form>
+            </div>
+          </div>
+          
+          <?php if ($is_master): ?>
+            <!-- TAB 10: ACCESS KEYS (Master Only) -->
+            <div id="keys-tab" class="tab-content">
+              <h2 class="section-title">Manage CMS Access Keys</h2>
+              <p class="section-desc">Generate secure keys for staff editors, or revoke keys to lock access instantly.</p>
+              
+              <!-- Generator -->
               <div class="key-generator-box">
-                <h3 class="generator-title">Generate New Access Key</h3>
-                <p class="generator-desc">Create a descriptive key that you can share with staff members. Staff keys can only edit contact details.</p>
-                
+                <h3 class="generator-title">Generate Staff Key</h3>
                 <form action="admin.php" method="POST">
                   <input type="hidden" name="action" value="add_key" />
                   <div class="gen-actions">
                     <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
                       <label class="form-label" for="new_label">Key Label / Owner Name</label>
-                      <input type="text" id="new_label" name="new_label" class="form-input" style="padding-left: 1.25rem" placeholder="e.g. Principal Office, Main Staff Room" required />
+                      <input type="text" id="new_label" name="new_label" class="form-input" placeholder="e.g. Science Lab Staff" required />
                     </div>
                     <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
                       <label class="form-label" for="new_key">Access Key Code</label>
                       <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="new_key" name="new_key" class="form-input" style="padding-left: 1.25rem" placeholder="e.g. excellence_staff_402" required />
+                        <input type="text" id="new_key" name="new_key" class="form-input" placeholder="e.g. excellence_staff_402" required />
                         <button type="button" class="btn-secondary" onclick="generateRandomKey()">Generate Code</button>
                       </div>
                     </div>
                     <button type="submit" class="btn-submit" style="width: auto; height: 42px; padding: 0 1.5rem; white-space: nowrap; box-shadow: none;">
-                      Add Access Key
+                      Save Key
                     </button>
                   </div>
                 </form>
               </div>
               
-              <!-- Active Keys List -->
-              <h3 class="form-section-header" style="margin-bottom: 1rem;">Active Access Keys</h3>
+              <!-- Key List Table -->
+              <h3 class="form-section-header">Active Access Keys</h3>
               <div class="key-table-wrapper">
                 <table class="key-table">
                   <thead>
                     <tr>
-                      <th>Key Holder Label</th>
+                      <th>Key Owner Label</th>
                       <th>Key Code</th>
                       <th style="width: 120px; text-align: right;">Action</th>
                     </tr>
@@ -938,7 +1695,7 @@ if ($is_logged_in) {
                     </tr>
                     <?php if (empty($ACCESS_KEYS)): ?>
                       <tr>
-                        <td colspan="3" style="text-align: center; color: var(--color-text-muted); padding: 2rem;">No custom staff keys active. Create one above!</td>
+                        <td colspan="3" style="text-align: center; color: var(--color-text-muted); padding: 1.5rem;">No staff keys active. Generate one above!</td>
                       </tr>
                     <?php else: ?>
                       <?php foreach ($ACCESS_KEYS as $k => $label): ?>
@@ -946,8 +1703,7 @@ if ($is_logged_in) {
                           <td><?php echo htmlspecialchars($label); ?></td>
                           <td><span class="key-code"><?php echo htmlspecialchars($k); ?></span></td>
                           <td style="text-align: right;">
-                            <a href="admin.php?action=revoke_key&key=<?php echo urlencode($k); ?>" class="btn-revoke" onclick="return confirm('Are you sure you want to revoke access for this key?');">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            <a href="admin.php?action=revoke_key&key=<?php echo urlencode($k); ?>" class="btn-revoke" onclick="return confirm('Are you sure you want to revoke access?');">
                               Revoke
                             </a>
                           </td>
@@ -957,7 +1713,6 @@ if ($is_logged_in) {
                   </tbody>
                 </table>
               </div>
-
             </div>
           <?php endif; ?>
 
@@ -969,31 +1724,38 @@ if ($is_logged_in) {
     
   </div>
 
-  <!-- Footer -->
   <footer>
     <p>© <?php echo date('Y'); ?> Govt. Higher Secondary School for Excellence, Bhopal. All rights reserved.</p>
   </footer>
 
   <script>
     function switchTab(tabId, el) {
-      // Hide all tabs
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
-      // Show active tab
       document.getElementById(tabId).classList.add('active');
       
-      // Deactivate all sidebar items
       document.querySelectorAll('.nav-tab').forEach(item => {
         item.classList.remove('active');
       });
-      // Activate clicked item
       el.classList.add('active');
     }
     
     function generateRandomKey() {
       const rand = Math.floor(100 + Math.random() * 900);
       document.getElementById('new_key').value = 'excellence_staff_' + rand;
+    }
+
+    function addNewRuleRow() {
+      const box = document.getElementById('rules-box');
+      const div = document.createElement('div');
+      div.className = 'rule-row';
+      div.innerHTML = `
+        <input type="text" name="h_rules[]" class="form-input" placeholder="Type hostel rule statement..." />
+        <button type="button" class="btn-icon-danger" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      box.appendChild(div);
+      div.querySelector('input').focus();
     }
   </script>
 </body>
