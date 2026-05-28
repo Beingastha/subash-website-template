@@ -18,15 +18,19 @@
   // 3. Sync Language Cookie
   const savedLang = localStorage.getItem('selectedLanguage') || 'en';
   const cookieMatch = document.cookie.match(/googtrans=([^;]+)/);
-  const expectedCookieValue = savedLang === 'hi' ? '/en/hi' : '/en/en';
-  if (!cookieMatch || cookieMatch[1] !== expectedCookieValue) {
-    const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
-    if (savedLang === 'hi') {
+  
+  if (savedLang === 'hi') {
+    if (!cookieMatch || cookieMatch[1] !== '/en/hi') {
+      const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
       document.cookie = "googtrans=/en/hi; path=/" + cookieDomain;
       document.cookie = "googtrans=/en/hi; path=/";
-    } else {
-      document.cookie = "googtrans=/en/en; path=/" + cookieDomain;
-      document.cookie = "googtrans=/en/en; path=/";
+    }
+  } else {
+    // If English, clear all translation cookies to prevent Google Translate from loading/re-translating
+    if (cookieMatch) {
+      const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + cookieDomain;
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
   }
 })();
@@ -42,7 +46,7 @@ window.changeLanguage = function(langCode) {
   } else {
     document.cookie = "googtrans=/en/en; path=/" + cookieDomain;
     document.cookie = "googtrans=/en/en; path=/";
-    // Clear cookie
+    // Clear cookies completely
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + cookieDomain;
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
@@ -568,6 +572,16 @@ function animateCounter(el) {
 }
 // Initialize Google Translate
 function initGoogleTranslate() {
+  const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+  // CRITICAL: Do NOT load the Google Translate script if the language is English.
+  // This completely stops Google Translate from starting or forcing translation back to Hindi!
+  if (savedLang !== 'hi') {
+    const cookieDomain = window.location.hostname === 'localhost' ? '' : '; domain=' + window.location.hostname;
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + cookieDomain;
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    return;
+  }
+
   if (!document.getElementById('google_translate_element')) {
     const div = document.createElement('div');
     div.id = 'google_translate_element';
