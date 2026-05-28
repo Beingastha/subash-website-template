@@ -417,7 +417,7 @@ window.schoolData = {
     }
   ],
   "images": {
-    "hero": "/images/hero-campus.png",
+    "hero": "/images/hero-campus.jpg",
     "principal": "/images/principal.png",
     "teachersGroup": "/images/teachers-group.png",
     "hostel": "/images/hostel.png",
