@@ -296,15 +296,15 @@ function renderNavigation(activePage, data) {
     const newTheme = isDark ? 'dark' : 'light';
     localStorage.setItem('theme', newTheme);
     
-    // Update both icons
-    const desktopIcon = document.querySelector('#theme-toggle-btn i');
-    const mobileIcon = document.querySelector('#mobile-theme-toggle-btn i');
+    // Reset both buttons' HTML with fresh <i> tags so Lucide can render the updated icons
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle-btn');
     
-    if (desktopIcon) {
-      desktopIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+    if (themeToggleBtn) {
+      themeToggleBtn.innerHTML = `<i data-lucide="${newTheme === 'dark' ? 'sun' : 'moon'}" class="w-5 h-5"></i>`;
     }
-    if (mobileIcon) {
-      mobileIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+    if (mobileThemeToggleBtn) {
+      mobileThemeToggleBtn.innerHTML = `<i data-lucide="${newTheme === 'dark' ? 'sun' : 'moon'}" class="w-4 h-4"></i>`;
     }
     
     lucide.createIcons();
