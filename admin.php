@@ -1750,7 +1750,8 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Publish Circular & Notice</button>
               </form>
             </div>
-          <?php endif; ?>
+          </div>
+        <?php endif; ?>
           
           <!-- TAB 8: FACULTY LIST -->
           <?php if ($is_master): ?>
@@ -1811,7 +1812,8 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Register Faculty Member</button>
               </form>
             </div>
-          <?php endif; ?>
+          </div>
+        <?php endif; ?>
           
           <!-- TAB 9: TESTIMONIALS -->
           <?php if ($is_master): ?>
@@ -1868,7 +1870,8 @@ if ($is_logged_in) {
                 <button type="submit" class="btn-submit">Submit Website Review</button>
               </form>
             </div>
-          <?php endif; ?>
+          </div>
+        <?php endif; ?>
           
           <?php if ($is_master): ?>
             <!-- TAB 10: ACCESS KEYS (Master Only) -->
