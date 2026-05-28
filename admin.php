@@ -1,4 +1,9 @@
 <?php
+// Prevent caching of CMS pages in browser and proxies
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 session_start();
 define('SECURE_ACCESS', true);
 
@@ -40,7 +45,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 
 $is_logged_in = isset($_SESSION['admin_key']);
 $is_master = $_SESSION['is_master'] ?? false;
+
+// Read last active tab from requests to prevent UI layout reset on submit
+$req_tab = $_POST['active_tab'] ?? $_GET['active_tab'] ?? '';
 $default_tab = $is_master ? 'general-tab' : 'contact-tab';
+if ($is_logged_in && !empty($req_tab)) {
+    if ($is_master || $req_tab === 'contact-tab') {
+        $default_tab = htmlspecialchars($req_tab);
+    }
+}
 
 // Helper to save data back to JSON and JS config
 function saveData($json_data, $data_file, $js_file) {
@@ -834,6 +847,7 @@ if ($is_logged_in) {
       align-self: start;
       max-height: calc(100vh - 8rem);
       overflow-y: auto;
+      padding-right: 0.5rem;
     }
 
     .sidebar::-webkit-scrollbar {
@@ -850,10 +864,10 @@ if ($is_logged_in) {
     }
 
     .nav-tab {
-      background-color: var(--color-card-dark);
+      background-color: rgba(26, 32, 32, 0.6);
       border: 1px solid var(--color-border-dark);
       color: var(--color-text-muted);
-      padding: 0.85rem 1.15rem;
+      padding: 0.9rem 1.25rem;
       border-radius: 0.75rem;
       font-weight: 600;
       text-align: left;
@@ -862,19 +876,112 @@ if ($is_logged_in) {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
     }
 
     .nav-tab:hover {
       color: var(--color-white);
-      border-color: rgba(13, 94, 58, 0.5);
-      background-color: rgba(13, 94, 58, 0.05);
+      border-color: rgba(212, 175, 55, 0.4);
+      background-color: rgba(13, 94, 58, 0.1);
+      transform: translateX(4px);
     }
 
     .nav-tab.active {
       color: var(--color-white);
       border-color: var(--color-green);
-      background-color: rgba(13, 94, 58, 0.15);
+      background-color: rgba(13, 94, 58, 0.25);
+      box-shadow: inset 0 0 10px rgba(13, 94, 58, 0.2);
+    }
+
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--color-green);
+      transform: scaleY(0);
+      transition: var(--transition);
+    }
+
+    .nav-tab.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-tab-icon {
+      width: 1.15rem;
+      height: 1.15rem;
+      fill: currentColor;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    /* Welcome Header in CMS */
+    .dashboard-welcome {
+      grid-column: span 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(13, 94, 58, 0.2) 0%, rgba(26, 32, 32, 0.6) 100%);
+      border: 1px solid var(--color-border-dark);
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 0.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-welcome {
+        grid-column: span 1;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    .welcome-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(90deg, #fff, var(--color-gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-text p {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #72ffb2;
+      background: rgba(114, 255, 178, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(114, 255, 178, 0.2);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      background-color: #52f396;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #52f396;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(82, 243, 150, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(82, 243, 150, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(82, 243, 150, 0); }
     }
 
     /* Content Area */
@@ -1143,21 +1250,66 @@ if ($is_logged_in) {
 
       <div class="dashboard-layout">
         
+        <!-- Welcome Header Banner -->
+        <div class="dashboard-welcome">
+          <div class="welcome-text">
+            <h1>Welcome back, <?php echo $is_master ? 'Master Admin' : 'Staff Editor'; ?></h1>
+            <p>Manage and update your school website content instantly.</p>
+          </div>
+          <div class="system-status">
+            <span class="status-indicator"></span>
+            <span>CMS Active</span>
+          </div>
+        </div>
+
         <!-- Sidebar Navigation Tabs -->
         <div class="sidebar">
           <?php if ($is_master): ?>
-            <button class="nav-tab active" onclick="switchTab('general-tab', this)">General & Stats</button>
-            <button class="nav-tab" onclick="switchTab('principal-tab', this)">Principal Desk</button>
-            <button class="nav-tab" onclick="switchTab('contact-tab', this)">Contact Details</button>
-            <button class="nav-tab" onclick="switchTab('academics-tab', this)">Academic Streams</button>
-            <button class="nav-tab" onclick="switchTab('activities-tab', this)">Activities & Sports</button>
-            <button class="nav-tab" onclick="switchTab('hostel-tab', this)">Hostel & Rules</button>
-            <button class="nav-tab" onclick="switchTab('notices-tab', this)">Circulars & Notices</button>
-            <button class="nav-tab" onclick="switchTab('teachers-tab', this)">Faculty List</button>
-            <button class="nav-tab" onclick="switchTab('testimonials-tab', this)">Reviews / Alumni</button>
-            <button class="nav-tab" style="border-color: var(--color-gold);" onclick="switchTab('keys-tab', this)">Manage Access Keys</button>
+            <button class="nav-tab <?php echo ($default_tab === 'general-tab') ? 'active' : ''; ?>" onclick="switchTab('general-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+              General & Stats
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'principal-tab') ? 'active' : ''; ?>" onclick="switchTab('principal-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              Principal Desk
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'contact-tab') ? 'active' : ''; ?>" onclick="switchTab('contact-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1.04-1-.04z"/></svg>
+              Contact Details
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'academics-tab') ? 'active' : ''; ?>" onclick="switchTab('academics-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.49 12.02L12 15.57l6.51-3.55-6.51-3.56-6.51 3.56z"/></svg>
+              Academic Streams
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'activities-tab') ? 'active' : ''; ?>" onclick="switchTab('activities-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v1c0 2.44 1.72 4.48 4 4.9V15c0 2.21 1.79 4 4 4h1v2H9v2h6v-2h-4v-2h1c2.21 0 4-1.79 4-4V9.9c2.28-.42 4-2.46 4-4.9V4c0-1.1-.9-2-2-2zm-10 5c-1.1 0-2-.9-2-2V4h2v3zm10-2v2c0 1.1-.9 2-2 2V4h2z"/></svg>
+              Activities & Sports
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'hostel-tab') ? 'active' : ''; ?>" onclick="switchTab('hostel-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+              Hostel & Rules
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'notices-tab') ? 'active' : ''; ?>" onclick="switchTab('notices-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"/></svg>
+              Circulars & Notices
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'teachers-tab') ? 'active' : ''; ?>" onclick="switchTab('teachers-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              Faculty List
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'testimonials-tab') ? 'active' : ''; ?>" onclick="switchTab('testimonials-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z"/></svg>
+              Reviews / Alumni
+            </button>
+            <button class="nav-tab <?php echo ($default_tab === 'keys-tab') ? 'active' : ''; ?>" style="border-color: var(--color-gold);" onclick="switchTab('keys-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24" style="fill: var(--color-gold);"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+              Manage Access Keys
+            </button>
           <?php else: ?>
-            <button class="nav-tab active" onclick="switchTab('contact-tab', this)">Contact Details</button>
+            <button class="nav-tab <?php echo ($default_tab === 'contact-tab') ? 'active' : ''; ?>" onclick="switchTab('contact-tab', this)">
+              <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1.04-1-.04z"/></svg>
+              Contact Details
+            </button>
           <?php endif; ?>
         </div>
         
@@ -1172,6 +1324,7 @@ if ($is_logged_in) {
             
             <form action="admin.php" method="POST" enctype="multipart/form-data">
               <input type="hidden" name="action" value="update_general" />
+              <input type="hidden" name="active_tab" value="general-tab" />
               
               <div class="form-grid">
                 <div class="form-group grid-full">
@@ -1251,6 +1404,7 @@ if ($is_logged_in) {
               
               <form action="admin.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update_principal" />
+                <input type="hidden" name="active_tab" value="principal-tab" />
                 
                 <div class="form-grid">
                   <div class="form-group">
@@ -1301,6 +1455,7 @@ if ($is_logged_in) {
             
             <form action="admin.php" method="POST">
               <input type="hidden" name="action" value="update_contact" />
+              <input type="hidden" name="active_tab" value="contact-tab" />
               
               <h3 class="form-section-header">Contact Channels</h3>
               <div class="form-grid">
@@ -1374,6 +1529,7 @@ if ($is_logged_in) {
               
               <form action="admin.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update_academics" />
+                <input type="hidden" name="active_tab" value="academics-tab" />
                 
                 <div class="form-grid">
                   <div class="form-group">
@@ -1426,6 +1582,7 @@ if ($is_logged_in) {
               
               <form action="admin.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update_activities" />
+                <input type="hidden" name="active_tab" value="activities-tab" />
                 
                 <!-- Featured Activities Loop (Badminton, Boxing, Cricket) -->
                 <?php for ($i = 0; $i < 3; $i++): $act = $activities['featured'][$i] ?? ['title'=>'','description'=>'','facilities'=>'','coaching'=>'','achievements'=>'','schedule'=>'','image'=>'']; ?>
@@ -1486,6 +1643,7 @@ if ($is_logged_in) {
               
               <form action="admin.php" method="POST">
                 <input type="hidden" name="action" value="update_hostel" />
+                <input type="hidden" name="active_tab" value="hostel-tab" />
                 
                 <div class="form-grid">
                   <div class="form-group">
@@ -1557,7 +1715,7 @@ if ($is_logged_in) {
                       </div>
                       <div class="list-item-subtitle"><?php echo htmlspecialchars($n['date']); ?> — <?php echo htmlspecialchars($n['description'] ?? ''); ?></div>
                     </div>
-                    <a href="admin.php?action=delete_notice&id=<?php echo $n['id']; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to delete this notice?');">Delete</a>
+                    <a href="admin.php?action=delete_notice&id=<?php echo $n['id']; ?>&active_tab=notices-tab" class="btn-icon-danger" onclick="return confirm('Are you sure you want to delete this notice?');">Delete</a>
                   </div>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -1568,6 +1726,7 @@ if ($is_logged_in) {
               <h3 class="generator-title">Publish New Circular / Notice</h3>
               <form action="admin.php" method="POST">
                 <input type="hidden" name="action" value="add_notice" />
+                <input type="hidden" name="active_tab" value="notices-tab" />
                 <div class="form-grid">
                   <div class="form-group grid-full">
                     <label class="form-label" for="n_title">Title (Circular/Notice)</label>
@@ -1611,7 +1770,7 @@ if ($is_logged_in) {
                       <div class="list-item-title"><?php echo htmlspecialchars($t['name']); ?></div>
                       <div class="list-item-subtitle"><?php echo htmlspecialchars($t['designation']); ?> (<?php echo htmlspecialchars($t['subject']); ?>) — <?php echo htmlspecialchars($t['experience']); ?> Exp</div>
                     </div>
-                    <a href="admin.php?action=delete_teacher&id=<?php echo $t['id']; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this faculty member?');">Remove</a>
+                    <a href="admin.php?action=delete_teacher&id=<?php echo $t['id']; ?>&active_tab=teachers-tab" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this faculty member?');">Remove</a>
                   </div>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -1622,6 +1781,7 @@ if ($is_logged_in) {
               <h3 class="generator-title">Add Faculty Member</h3>
               <form action="admin.php" method="POST">
                 <input type="hidden" name="action" value="add_teacher" />
+                <input type="hidden" name="active_tab" value="teachers-tab" />
                 <div class="form-grid">
                   <div class="form-group">
                     <label class="form-label" for="t_name">Teacher Name</label>
@@ -1671,7 +1831,7 @@ if ($is_logged_in) {
                       <div class="list-item-title"><?php echo htmlspecialchars($tst['name']); ?> (<?php echo htmlspecialchars($tst['role']); ?>) — <?php echo str_repeat('★', intval($tst['stars'])); ?></div>
                       <div class="list-item-subtitle">"<?php echo htmlspecialchars($tst['quote']); ?>"</div>
                     </div>
-                    <a href="admin.php?action=delete_testimonial&idx=<?php echo $idx; ?>" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this review?');">Delete</a>
+                    <a href="admin.php?action=delete_testimonial&idx=<?php echo $idx; ?>&active_tab=testimonials-tab" class="btn-icon-danger" onclick="return confirm('Are you sure you want to remove this review?');">Delete</a>
                   </div>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -1682,6 +1842,7 @@ if ($is_logged_in) {
               <h3 class="generator-title">Add Website Review</h3>
               <form action="admin.php" method="POST">
                 <input type="hidden" name="action" value="add_testimonial" />
+                <input type="hidden" name="active_tab" value="testimonials-tab" />
                 <div class="form-grid">
                   <div class="form-group">
                     <label class="form-label" for="tst_name">Reviewer Name</label>
@@ -1720,6 +1881,7 @@ if ($is_logged_in) {
                 <h3 class="generator-title">Generate Staff Key</h3>
                 <form action="admin.php" method="POST">
                   <input type="hidden" name="action" value="add_key" />
+                  <input type="hidden" name="active_tab" value="keys-tab" />
                   <div class="gen-actions">
                     <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
                       <label class="form-label" for="new_label">Key Label / Owner Name</label>
@@ -1766,7 +1928,7 @@ if ($is_logged_in) {
                           <td><?php echo htmlspecialchars($label); ?></td>
                           <td><span class="key-code"><?php echo htmlspecialchars($k); ?></span></td>
                           <td style="text-align: right;">
-                            <a href="admin.php?action=revoke_key&key=<?php echo urlencode($k); ?>" class="btn-revoke" onclick="return confirm('Are you sure you want to revoke access?');">
+                            <a href="admin.php?action=revoke_key&key=<?php echo urlencode($k); ?>&active_tab=keys-tab" class="btn-revoke" onclick="return confirm('Are you sure you want to revoke access?');">
                               Revoke
                             </a>
                           </td>
