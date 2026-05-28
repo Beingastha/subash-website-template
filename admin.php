@@ -806,9 +806,21 @@ if ($is_logged_in) {
       gap: 2rem;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1200px) {
+      .dashboard-layout {
+        grid-template-cols: 240px 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
       .dashboard-layout {
         grid-template-cols: 1fr;
+        gap: 1.5rem;
+      }
+      .sidebar {
+        position: static !important;
+        max-height: none !important;
       }
     }
 
