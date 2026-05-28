@@ -591,5 +591,6 @@ function initGoogleTranslate() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  initGoogleTranslate();
+  // Delay Google Translate library load to ensure dynamic client-side JS renders all text nodes first
+  setTimeout(initGoogleTranslate, 500);
 });

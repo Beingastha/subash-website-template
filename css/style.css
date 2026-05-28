@@ -321,22 +321,26 @@ html.dark-theme .card-hover-lift:hover {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* Hide Google Translate top bar/widgets */
+/* Complete Google Translate bar and frame removal */
 .goog-te-banner-frame,
 iframe.goog-te-banner-frame,
-.goog-te-banner {
+.goog-te-banner,
+.skiptranslate,
+iframe.skiptranslate,
+#goog-gt-tt,
+.goog-te-balloon-frame {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+html {
+  top: 0 !important;
 }
 
 body {
   top: 0 !important;
-}
-
-.goog-tooltip,
-.goog-tooltip:hover,
-#goog-gt-tt,
-.goog-te-balloon-frame {
-  display: none !important;
+  position: static !important;
 }
 
 .goog-text-highlight {
@@ -349,5 +353,33 @@ body {
 .lang-active {
   font-weight: 600;
   color: var(--color-secondary, #D4AF37) !important;
+}
+
+/* Hero background floating particles drifting keyframes */
+@keyframes driftSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -50px) scale(1.1); }
+}
+
+@keyframes driftSlower {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-45px, 45px) scale(0.95); }
+}
+
+@keyframes pulseSlow {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+  50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.6; }
+}
+
+.animate-drift-slow {
+  animation: driftSlow 15s ease-in-out infinite;
+}
+
+.animate-drift-slower {
+  animation: driftSlower 20s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 8s ease-in-out infinite;
 }
 
